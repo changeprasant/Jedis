@@ -55,3 +55,24 @@ It is important to return the Jedis instance to the pool once you've finished us
 ```java
 pool.destroy();
 ```
+
+### I need to use sharding, but I would like to hint Jedis to force certain keys to go to the same shard
+
+What you need is something called "keytags", and they are supported by Jedis.
+To work with keytags you just need to set a pattern when you instance ShardedJedis.
+For example:
+```java
+ShardedJedis jedis = new ShardedJedis(shards,
+ShardedJedis.DEFAULT_KEY_TAG_PATTERN);
+```
+You can create your own pattern if you want. The default pattern is {}, this means that whatever goes inside curly brackets will be used to determine the shard.
+
+So for example:
+```java
+jedis.set("foo{bar}", "12345");
+```
+and
+```java
+jedis.set("car{bar}", "877878");
+```
+will go to the same shard.
