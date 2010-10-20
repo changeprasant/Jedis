@@ -84,10 +84,10 @@ To do that in Jedis you just need to:
 
 ```java
 List<Object> results = jedis.pipelined(new JedisPipeline() {
-public void execute() {
-client.set("foo", "bar");
-client.get("foo");
-}
+    public void execute() {
+        client.set("foo", "bar");
+        client.get("foo");
+    }
 });
 ```
 **Remember that pipeling and sharding is not yet supported** but it will in the near future
