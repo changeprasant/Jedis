@@ -76,3 +76,18 @@ and
 jedis.set("car{bar}", "877878");
 ```
 will go to the same shard.
+
+### Pipelining
+
+Sometimes you need to send a bunch of different commands. A very cool way to do that, and have better performance than doing it the naive way, is to use pipelining. This way you send commands without waiting for response, and you actually read the responses at the end, which is faster.
+To do that in Jedis you just need to:
+
+```java
+List<Object> results = jedis.pipelined(new JedisPipeline() {
+public void execute() {
+client.set("foo", "bar");
+client.get("foo");
+}
+});
+```
+**Remember that pipeling and sharding is not yet supported** but it will in the near future
