@@ -91,3 +91,35 @@ List<Object> results = jedis.pipelined(new JedisPipeline() {
 });
 ```
 **Remember that pipeling and sharding is not yet supported** but it will in the near future
+
+### Publish/Subscribe
+
+To subscribe to a channel in Redis, create an instance of JedisPubSub and call subscribe on the Jedis instance:
+
+```java
+class MyListener extends JedisPubSub {
+        public void onMessage(String channel, String message) {
+        }
+
+        public void onSubscribe(String channel, int subscribedChannels) {
+        }
+
+        public void onUnsubscribe(String channel, int subscribedChannels) {
+        }
+
+        public void onPSubscribe(String pattern, int subscribedChannels) {
+        }
+
+        public void onPUnsubscribe(String pattern, int subscribedChannels) {
+        }
+
+        public void onPMessage(String pattern, String channel,
+            String message) {
+        }
+}
+
+MyListener l = new MyListener();
+
+jedis.subscribe(l, "foo");
+```
+Note that subscribe is a blocking operation operation because it will poll Redis for responses on the thread that calls subscribe.  A single JedisPubSub instance can be used to subscribe to multiple channels.  You can call subscribe or psubscribe on an existing JedisPubSub instance to change your subscriptions.
