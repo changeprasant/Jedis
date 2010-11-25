@@ -90,7 +90,6 @@ List<Object> results = jedis.pipelined(new JedisPipeline() {
     }
 });
 ```
-**Remember that pipeling and sharding is not yet supported** but it will in the near future
 
 ### Publish/Subscribe
 
