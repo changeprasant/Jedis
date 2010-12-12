@@ -34,12 +34,17 @@ Jedis is also distributed as a Maven Dependency through Sonatype. To configure t
 
 **Jedis is not threadsafe**. You shouldn't use the same instance from different threads because you'll have strange errors. And sometimes creating lots of Jedis instances is not good enough because it means lots of sockets and connections, which leads to strange errors as well. So you should use in this cases JedisPool, which is a threadsafe pool of reusable Jedis instances. This way you can overcome those strange errors and achieve great performance.
 
-Yo use it need to:
+To use it, init a pool with:
 
 ```java
 JedisPool pool = new JedisPool("localhost");
 pool.init();
 ```
+As of jedis 1.5, use (note the dependency on commons-pool):
+```java
+JedisPool pool = new JedisPool(new Config(), "localhost");
+```
+
 You can store the pool somewhere statically, it is threadsafe.
 
 And then you use it by:
@@ -89,6 +94,16 @@ List<Object> results = jedis.pipelined(new JedisPipeline() {
         client.get("foo");
     }
 });
+```
+
+As of jedis 1.5, JedisPipeline is now PipelineBlock and there is a new option for creating pipelines:
+
+```java
+// Method #1
+Pipeline p = jedis.pipelined();
+p.set("foo", "bar");
+p.get("foo");
+List<Object> results = p.execute();
 ```
 
 ### Publish/Subscribe
