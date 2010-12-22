@@ -55,7 +55,7 @@ Jedis jedis = pool.getResource();
 pool.returnResource(jedis);
 ```
 
-It is important to return the Jedis instance to the pool once you've finished using it. And when you close your application it is good to call:
+It is important to return the Jedis instance to the pool once you've finished using it. You should also take the time to adjust the Config() settings to your use case. By default, Jedis will close a connection after 300 seconds if it has not been returned. When you close your application it is good to call:
 
 ```java
 pool.destroy();
