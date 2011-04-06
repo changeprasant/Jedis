@@ -17,6 +17,10 @@ This will run the tests. And the tests use two instances of the latests Redis ve
 #### Download the JAR from github
 Just go to the Downloads section and use the latest Jedis JAR available.
 
+You will also need to download Apache Commons at:
+   http://commons.apache.org/pool/download_pool.cgile   and then import:
+import org.apache.commons.pool.impl.GenericObjectPool.Config;
+
 #### Configure a Maven dependency
 Jedis is also distributed as a Maven Dependency through Sonatype. To configure that just add the following XML snippet to your pom.xml file.
 
@@ -137,3 +141,37 @@ MyListener l = new MyListener();
 jedis.subscribe(l, "foo");
 ```
 Note that subscribe is a blocking operation operation because it will poll Redis for responses on the thread that calls subscribe.  A single JedisPubSub instance can be used to subscribe to multiple channels.  You can call subscribe or psubscribe on an existing JedisPubSub instance to change your subscriptions.
+
+###Transactions
+To do transactions in jedis, you have to wrap operations in a transaction block:
+
+```java
+jedis.watch (key1, key2, ...);
+BinaryTransaction t = jedis.multi();
+t.set("foo", "bar");
+t.exec();
+```
+
+
+Note: when you have any method that returns values, you have to do like this:
+
+```java
+t.get("foo");
+t.hgetAll("car");
+List<Object> all = t.exec();
+String result1 = SafeEncoder.encode(all.get(1)); // get the result of the first get in the transaction.
+```
+
+
+Note2: Versions after 1.5.2 will have improved support for transactions and pipelining:
+
+```java
+Transaction t = jedis.multi();
+t.set("foo", "bar");
+Future<String> result1 = t.get("foo");
+Future<Map<String, String>> result2 = t.hgetAll("car");
+List<Object> allResults = t.exec();
+```
+So there will be the optional possibility to get specific entries from the entire transaction. It will be no longer required to deal with positions and conversions.
+
+
