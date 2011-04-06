@@ -17,6 +17,7 @@ This will run the tests. And the tests use two instances of the latests Redis ve
 #### Download the JAR from github
 Just go to the Downloads section and use the latest Jedis JAR available.
 
+#### Apache Commons Dependency
 You will also need to download Apache Commons at:
    http://commons.apache.org/pool/download_pool.cgile   and then import:
 import org.apache.commons.pool.impl.GenericObjectPool.Config;
