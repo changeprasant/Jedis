@@ -18,8 +18,8 @@ This will run the tests. And the tests use two instances of the latests Redis ve
 Just go to the Downloads section and use the latest Jedis JAR available.
 
 #### Apache Commons Dependency
-You will also need to download Apache Commons at:
-   http://commons.apache.org/pool/download_pool.cgile   and then import:
+You will also need to download Apache Commons at [[ http://commons.apache.org/pool/download_pool.cgi]]:
+and then import:
 import org.apache.commons.pool.impl.GenericObjectPool.Config;
 
 #### Configure a Maven dependency
@@ -164,15 +164,4 @@ String result1 = SafeEncoder.encode(all.get(1)); // get the result of the first 
 ```
 
 
-Note2: Versions after 1.5.2 will have improved support for transactions and pipelining:
-
-```java
-Transaction t = jedis.multi();
-t.set("foo", "bar");
-Future<String> result1 = t.get("foo");
-Future<Map<String, String>> result2 = t.hgetAll("car");
-List<Object> allResults = t.exec();
-```
-So there will be the optional possibility to get specific entries from the entire transaction. It will be no longer required to deal with positions and conversions.
-
-
+Note 2: Versions after 1.5.2 will have improved support for transactions and pipelining. It will have the optional possibility to get specific entries directly from the transaction without dealing with positions and conversions.
