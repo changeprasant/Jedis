@@ -18,9 +18,8 @@ This will run the tests. And the tests use two instances of the latests Redis ve
 Just go to the Downloads section and use the latest Jedis JAR available.
 
 #### Apache Commons Dependency
-You will also need to download Apache Commons at [[ http://commons.apache.org/pool/download_pool.cgi]]:
-and then import:
-import org.apache.commons.pool.impl.GenericObjectPool.Config;
+You will also need to download Apache Commons [[ http://commons.apache.org/pool/download_pool.cgi]]:
+and then import: import org.apache.commons.pool.impl.GenericObjectPool.Config;
 
 #### Configure a Maven dependency
 Jedis is also distributed as a Maven Dependency through Sonatype. To configure that just add the following XML snippet to your pom.xml file.
@@ -164,4 +163,4 @@ String result1 = SafeEncoder.encode(all.get(1)); // get the result of the first 
 ```
 
 
-Note 2: Versions after 1.5.2 will have improved support for transactions and pipelining. It will have the optional possibility to get specific entries directly from the transaction without dealing with positions and conversions.
+Note 2: Versions after 1.5.2 will have improved support for transactions and pipelining. It will have the optional possibility to get specific entries directly from the transaction without dealing with positions and conversions after t.exec().
