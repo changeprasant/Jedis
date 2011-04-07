@@ -42,19 +42,15 @@ Jedis is also distributed as a Maven Dependency through Sonatype. To configure t
         <scope>compile</scope>
     </dependency>
 
-## Advanced usage
+## Basic usage
+
+
+**Warning: regular Jedis is not threadsafe**. You shouldn't use the same instance from different threads because you'll have strange errors. And sometimes creating lots of Jedis instances is not good enough because it means lots of sockets and connections, which leads to strange errors as well. 
 
 ### Using Jedis in a multithreaded environment
+To avoid problems mentioned above, you should use in this cases JedisPool, which is a threadsafe pool of reusable Jedis instances. This way you can overcome those strange errors and achieve great performance.
 
-**Jedis is not threadsafe**. You shouldn't use the same instance from different threads because you'll have strange errors. And sometimes creating lots of Jedis instances is not good enough because it means lots of sockets and connections, which leads to strange errors as well. So you should use in this cases JedisPool, which is a threadsafe pool of reusable Jedis instances. This way you can overcome those strange errors and achieve great performance.
-
-To use it, init a pool with:
-
-```java
-JedisPool pool = new JedisPool("localhost");
-pool.init();
-```
-As of jedis 1.5, use (note the dependency on commons-pool):
+To use it, init a pool:
 ```java
 JedisPool pool = new JedisPool(new Config(), "localhost");
 ```
@@ -65,15 +61,28 @@ And then you use it by:
 
 ```java
 Jedis jedis = pool.getResource();
-/// ... do stuff here ...
+
+/// ... do stuff here ... for example
+
+jedis.set("foo", "bar");
+String foobar = jedis.get("foo");
+jedis.zadd("sose", 0, "car"); jedis.zadd("sose", 0, "bike"); 
+Set<String> sose = jedis.zrange("sose", 0, -1);
+
+/// ... it's important to return the Jedis instance to the pool once you've finished using it
 pool.returnResource(jedis);
-```
 
-It is important to return the Jedis instance to the pool once you've finished using it. You should also take the time to adjust the Config() settings to your use case. By default, Jedis will close a connection after 300 seconds if it has not been returned. When you close your application it is good to call:
-
-```java
+/// ... when closing your application:
 pool.destroy();
 ```
+
+You should also take the time to adjust the Config() settings to your use case. By default, Jedis will close a connection after 300 seconds if it has not been returned.:
+
+```java
+
+```
+
+## Advanced usage
 
 ### I need to use sharding, but I would like to hint Jedis to force certain keys to go to the same shard
 
@@ -183,12 +192,12 @@ t.set("fool", "bar");
 Response<String> result1 = t.get("fool");
 
 t.zadd("foo", 1, "barowitch"); t.zadd("foo", 0, "barinsky"); t.zadd("foo", 0, "barikoviev");
-Response<Set<String>> sose = t.zrange("foo", 0, -1);    // get the entire sortedset
-t.exec();                                               // dont forget it
+Response<Set<String>> sose = t.zrange("foo", 0, -1);   // get the entire sortedset
+t.exec();                                              // dont forget it
 
-System.out.println("set get:" + result1.get());         // use Response.get() to retrieve things from a Response
-System.out.println("Set size: " + sose.get().size());   // on sose.get() you can directly call Set methods!
+String foolbar = set get:" + result1.get());           // use Response.get() to retrieve things from a Response
+int soseSize = sose.get().size();                      // on sose.get() you can directly call Set methods!
 
 // List<Object> allResults = t.exec();    	    	// you could still get all results at once, as before
-System.out.println(allResults.get(5).size())            // but this won't work. see above
+int wontwork = allResults.get(5).size();                // but this won't work to access the set. see above
 ```
