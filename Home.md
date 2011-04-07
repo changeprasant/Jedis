@@ -76,11 +76,7 @@ pool.returnResource(jedis);
 pool.destroy();
 ```
 
-You should also take the time to adjust the Config() settings to your use case. By default, Jedis will close a connection after 300 seconds if it has not been returned.:
-
-```java
-
-```
+You should also take the time to adjust the Config() settings to your use case. By default, Jedis will close a connection after 300 seconds if it has not been returned.
 
 ## Advanced usage
 
@@ -108,26 +104,72 @@ will go to the same shard.
 ### Pipelining
 
 Sometimes you need to send a bunch of different commands. A very cool way to do that, and have better performance than doing it the naive way, is to use pipelining. This way you send commands without waiting for response, and you actually read the responses at the end, which is faster.
-To do that in Jedis you just need to:
+
+Here is how to do it:
 
 ```java
-List<Object> results = jedis.pipelined(new JedisPipeline() {
-    public void execute() {
-        client.set("foo", "bar");
-        client.get("foo");
-    }
-});
-```
-
-As of jedis 1.5, JedisPipeline is now PipelineBlock and there is a new option for creating pipelines:
-
-```java
-// Method #1
 Pipeline p = jedis.pipelined();
 p.set("foo", "bar");
 p.get("foo");
-List<Object> results = p.execute();
+List<Object> results = p.exec();
+String result1 = SafeEncoder.encode(results.get(1)); // get the result of the first get in the pipeline.
+
 ```
+
+From version 1.5.3 there is a much more convenient way for creating pipelines, without the need to deal with positions and conversions after p.exec()  :
+
+```java
+Pipeline p = jedis.pipelined();
+p.set("fool", "bar"); 
+p.zadd("foo", 1, "barowitch");  p.zadd("foo", 0, "barinsky"); p.zadd("foo", 0, "barikoviev");
+Response<String> pipeString = p.get("fool");
+Response<Set<String>> sose = p.zrange("foo", 0, -1);
+p.exec(); 
+
+int soseSize = sose.get().size();
+Set<String> setBack = sose.get();
+```
+
+
+###Transactions
+To do transactions in jedis, you have to wrap operations in a transaction block, very similar to pipelining:
+
+```java
+jedis.watch (key1, key2, ...);
+BinaryTransaction t = jedis.multi();
+t.set("foo", "bar");
+t.exec();
+```
+
+Note: when you have any method that returns values, you have to do like this:
+
+```java
+t.get("foo");
+t.hgetAll("car");
+List<Object> all = t.exec();
+String result1 = SafeEncoder.encode(all.get(1)); // get the result of the first get in the transaction.
+```
+
+
+
+Note 2: From versions 1.5.3 there is much improved support for transactions. It will have the optional possibility to get specific entries directly from the transaction without dealing with positions and conversions after t.exec() :
+
+```java
+Transaction t = jedis.multi();
+t.set("fool", "bar"); 
+Response<String> result1 = t.get("fool");
+
+t.zadd("foo", 1, "barowitch"); t.zadd("foo", 0, "barinsky"); t.zadd("foo", 0, "barikoviev");
+Response<Set<String>> sose = t.zrange("foo", 0, -1);   // get the entire sortedset
+t.exec();                                              // dont forget it
+
+String foolbar = result1.get());                       // use Response.get() to retrieve things from a Response
+int soseSize = sose.get().size();                      // on sose.get() you can directly call Set methods!
+
+// List<Object> allResults = t.exec();    	    	// you could still get all results at once, as before
+int wontwork = allResults.get(5).size();                // but this won't work to access the set. see above
+```
+
 
 ### Publish/Subscribe
 
@@ -160,44 +202,3 @@ MyListener l = new MyListener();
 jedis.subscribe(l, "foo");
 ```
 Note that subscribe is a blocking operation operation because it will poll Redis for responses on the thread that calls subscribe.  A single JedisPubSub instance can be used to subscribe to multiple channels.  You can call subscribe or psubscribe on an existing JedisPubSub instance to change your subscriptions.
-
-###Transactions
-To do transactions in jedis, you have to wrap operations in a transaction block:
-
-```java
-jedis.watch (key1, key2, ...);
-BinaryTransaction t = jedis.multi();
-t.set("foo", "bar");
-t.exec();
-```
-
-
-Note: when you have any method that returns values, you have to do like this:
-
-```java
-t.get("foo");
-t.hgetAll("car");
-List<Object> all = t.exec();
-String result1 = SafeEncoder.encode(all.get(1)); // get the result of the first get in the transaction.
-```
-
-
-
-Note 2: From versions 1.5.3 there is improved support for transactions and pipelining. It will have the optional possibility to get specific entries directly from the transaction without dealing with positions and conversions after t.exec().
-
-
-```java
-Transaction t = jedis.multi();
-t.set("fool", "bar"); 
-Response<String> result1 = t.get("fool");
-
-t.zadd("foo", 1, "barowitch"); t.zadd("foo", 0, "barinsky"); t.zadd("foo", 0, "barikoviev");
-Response<Set<String>> sose = t.zrange("foo", 0, -1);   // get the entire sortedset
-t.exec();                                              // dont forget it
-
-String foolbar = set get:" + result1.get());           // use Response.get() to retrieve things from a Response
-int soseSize = sose.get().size();                      // on sose.get() you can directly call Set methods!
-
-// List<Object> allResults = t.exec();    	    	// you could still get all results at once, as before
-int wontwork = allResults.get(5).size();                // but this won't work to access the set. see above
-```
