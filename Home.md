@@ -11,9 +11,10 @@ That is very easy, you just need to:
 
 
 Before you package it using maven, for the tests to succeed, you need to have two Redis server instances running. Simply use the two Redis conf files in the conf directory with your up-to-date redis build. On two separate command lines, just run:
-    redis-server jedis/conf/redis.conf
-    redis-server jedis/conf/redis2.conf
-
+```
+redis-server jedis/conf/redis.conf
+redis-server jedis/conf/redis2.conf
+```
 (one is on the default port (6379) and the other on 6380, both with "foobared" as password)
 
 then finally run
@@ -26,7 +27,9 @@ Just go to the Downloads section and use the latest Jedis JAR available.
 #### Apache Commons Dependency
 You will also need to download Apache Commons [[ http://commons.apache.org/pool/download_pool.cgi]] 
 and then: 
+```java
 import org.apache.commons.pool.impl.GenericObjectPool.Config;
+```
 
 #### Configure a Maven dependency
 Jedis is also distributed as a Maven Dependency through Sonatype. To configure that just add the following XML snippet to your pom.xml file.
@@ -168,6 +171,7 @@ t.hgetAll("car");
 List<Object> all = t.exec();
 String result1 = SafeEncoder.encode(all.get(1)); // get the result of the first get in the transaction.
 ```
+
 
 
 Note 2: From versions 1.5.3 there is improved support for transactions and pipelining. It will have the optional possibility to get specific entries directly from the transaction without dealing with positions and conversions after t.exec().
