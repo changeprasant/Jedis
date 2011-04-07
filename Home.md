@@ -2,13 +2,16 @@
 
 ## Getting started
 
+check out the release notes here  [[ReleaseNotes]]
+
 ### Installing Jedis
 In order to have Jedis as a dependency in your application you can:
 
 #### Clone the github project and compile the code
 That is very easy, you just need to:
+```
     git clone git://github.com/xetorthio/jedis.git
-
+```
 
 Before you package it using maven, for the tests to succeed, you need to have two Redis server instances running. Simply use the two Redis conf files in the conf directory with your up-to-date redis build. On two separate command lines, just run:
 ```
@@ -18,7 +21,9 @@ redis-server jedis/conf/redis2.conf
 (one is on the default port (6379) and the other on 6380, both with "foobared" as password)
 
 then finally run
+```
     mvn package
+```
 to build, run the tests and package. 
  
 #### Download the JAR from github
