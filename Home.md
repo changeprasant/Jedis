@@ -170,4 +170,21 @@ String result1 = SafeEncoder.encode(all.get(1)); // get the result of the first 
 ```
 
 
-Note 2: Versions after 1.5.2 will have improved support for transactions and pipelining. It will have the optional possibility to get specific entries directly from the transaction without dealing with positions and conversions after t.exec().
+Note 2: From versions 1.5.3 there is improved support for transactions and pipelining. It will have the optional possibility to get specific entries directly from the transaction without dealing with positions and conversions after t.exec().
+
+
+```java
+Transaction t = jedis.multi();
+t.set("fool", "bar"); 
+Response<String> result1 = t.get("fool");
+
+t.zadd("foo", 1, "barowitch"); t.zadd("foo", 0, "barinsky"); t.zadd("foo", 0, "barikoviev");
+Response<Set<String>> sose = t.zrange("foo", 0, -1);    // get the entire sortedset
+t.exec();                                               // dont forget it
+
+System.out.println("set get:" + result1.get());         // use Response.get() to retrieve things from a Response
+System.out.println("Set size: " + sose.get().size());   // on sose.get() you can directly call Set methods!
+
+// List<Object> allResults = t.exec();    	    	// you could still get all results at once, as before
+System.out.println(allResults.get(5).size())            // but this won't work. see above
+```
