@@ -42,7 +42,7 @@ Jedis is also distributed as a Maven Dependency through Sonatype. To configure t
     <dependency>
         <groupId>redis.clients</groupId>
         <artifactId>jedis</artifactId>
-        <version>1.5.0</version>
+        <version>1.5.2</version>
         <type>jar</type>
         <scope>compile</scope>
     </dependency>
@@ -66,17 +66,16 @@ And then you use it by:
 
 ```java
 Jedis jedis = pool.getResource();
-
-/// ... do stuff here ... for example
-
-jedis.set("foo", "bar");
-String foobar = jedis.get("foo");
-jedis.zadd("sose", 0, "car"); jedis.zadd("sose", 0, "bike"); 
-Set<String> sose = jedis.zrange("sose", 0, -1);
-
-/// ... it's important to return the Jedis instance to the pool once you've finished using it
-pool.returnResource(jedis);
-
+try {
+  /// ... do stuff here ... for example
+  jedis.set("foo", "bar");
+  String foobar = jedis.get("foo");
+  jedis.zadd("sose", 0, "car"); jedis.zadd("sose", 0, "bike"); 
+  Set<String> sose = jedis.zrange("sose", 0, -1);
+} finally {
+  /// ... it's important to return the Jedis instance to the pool once you've finished using it
+  pool.returnResource(jedis);
+}
 /// ... when closing your application:
 pool.destroy();
 ```
