@@ -84,57 +84,6 @@ You should also take the time to adjust the Config() settings to your use case. 
 
 ## Advanced usage
 
-### I need to use sharding, but I would like to hint Jedis to force certain keys to go to the same shard
-
-What you need is something called "keytags", and they are supported by Jedis.
-To work with keytags you just need to set a pattern when you instance ShardedJedis.
-For example:
-```java
-ShardedJedis jedis = new ShardedJedis(shards,
-ShardedJedis.DEFAULT_KEY_TAG_PATTERN);
-```
-You can create your own pattern if you want. The default pattern is {}, this means that whatever goes inside curly brackets will be used to determine the shard.
-
-So for example:
-```java
-jedis.set("foo{bar}", "12345");
-```
-and
-```java
-jedis.set("car{bar}", "877878");
-```
-will go to the same shard.
-
-### Pipelining
-
-Sometimes you need to send a bunch of different commands. A very cool way to do that, and have better performance than doing it the naive way, is to use pipelining. This way you send commands without waiting for response, and you actually read the responses at the end, which is faster.
-
-Here is how to do it:
-
-```java
-Pipeline p = jedis.pipelined();
-p.set("foo", "bar");
-p.get("foo");
-List<Object> results = p.exec();
-String result1 = SafeEncoder.encode(results.get(1)); // get the result of the first get in the pipeline.
-
-```
-
-From version 1.5.3 there is a much more convenient way for creating pipelines, without the need to deal with positions and conversions after p.exec()  :
-
-```java
-Pipeline p = jedis.pipelined();
-p.set("fool", "bar"); 
-p.zadd("foo", 1, "barowitch");  p.zadd("foo", 0, "barinsky"); p.zadd("foo", 0, "barikoviev");
-Response<String> pipeString = p.get("fool");
-Response<Set<String>> sose = p.zrange("foo", 0, -1);
-p.exec(); 
-
-int soseSize = sose.get().size();
-Set<String> setBack = sose.get();
-```
-
-
 ###Transactions
 To do transactions in jedis, you have to wrap operations in a transaction block, very similar to pipelining:
 
@@ -175,6 +124,37 @@ int wontwork = allResults.get(5).size();                // but this won't work t
 ```
 
 
+### Pipelining
+
+Sometimes you need to send a bunch of different commands. A very cool way to do that, and have better performance than doing it the naive way, is to use pipelining. This way you send commands without waiting for response, and you actually read the responses at the end, which is faster. 
+
+Here is how to do it (very similar to transactions):
+
+```java
+Pipeline p = jedis.pipelined();
+p.set("foo", "bar");
+p.get("foo");
+List<Object> results = p.exec();
+String result1 = SafeEncoder.encode(results.get(1)); // get the result of the first get in the pipeline.
+
+```
+
+From version 1.5.3 there is a much more convenient way for creating pipelines, without the need to deal with positions and conversions after p.exec()  :
+
+```java
+Pipeline p = jedis.pipelined();
+p.set("fool", "bar"); 
+p.zadd("foo", 1, "barowitch");  p.zadd("foo", 0, "barinsky"); p.zadd("foo", 0, "barikoviev");
+Response<String> pipeString = p.get("fool");
+Response<Set<String>> sose = p.zrange("foo", 0, -1);
+p.sync(); 
+
+int soseSize = sose.get().size();
+Set<String> setBack = sose.get();
+```
+
+For more explanations see code comments in the transaction section.
+
 ### Publish/Subscribe
 
 To subscribe to a channel in Redis, create an instance of JedisPubSub and call subscribe on the Jedis instance:
@@ -206,3 +186,25 @@ MyListener l = new MyListener();
 jedis.subscribe(l, "foo");
 ```
 Note that subscribe is a blocking operation operation because it will poll Redis for responses on the thread that calls subscribe.  A single JedisPubSub instance can be used to subscribe to multiple channels.  You can call subscribe or psubscribe on an existing JedisPubSub instance to change your subscriptions.
+
+
+### I need to use sharding, but I would like to hint Jedis to force certain keys to go to the same shard
+
+What you need is something called "keytags", and they are supported by Jedis.
+To work with keytags you just need to set a pattern when you instance ShardedJedis.
+For example:
+```java
+ShardedJedis jedis = new ShardedJedis(shards,
+ShardedJedis.DEFAULT_KEY_TAG_PATTERN);
+```
+You can create your own pattern if you want. The default pattern is {}, this means that whatever goes inside curly brackets will be used to determine the shard.
+
+So for example:
+```java
+jedis.set("foo{bar}", "12345");
+```
+and
+```java
+jedis.set("car{bar}", "877878");
+```
+will go to the same shard.
