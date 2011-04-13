@@ -49,8 +49,12 @@ Jedis is also distributed as a Maven Dependency through Sonatype. To configure t
 
 ## Basic usage
 
+### String or Binary
+Jedis can be used in two ways: strings or binary data as input. Redis examples refer much to Strings, and [[http://redis.io/topics/internals]] states that Redis is based on Strings as its basic building block. However, this may be misleading. "String" is understood in a broader sense, it refers to C char datatype which is 8 bit long, whereas Java characters are generally 16-bit. Redis sees only 8 bit blocks of data, which it doesn't interpret ("binary safe"). So, it's rather binary data that is native to Redis, not Java "Strings" which have to be encoded before being sent, and decoded after being retrieved, whereas byte[] are sent and retrieved directly. 
+Summarizing: Just don't encode your binary data into Strings, but use the binary versions.
 
-**Warning: regular Jedis is not threadsafe**. You shouldn't use the same instance from different threads because you'll have strange errors. And sometimes creating lots of Jedis instances is not good enough because it means lots of sockets and connections, which leads to strange errors as well. 
+### Regular Jedis is not threadsafe 
+You shouldn't use the same instance from different threads because you'll have strange errors. And sometimes creating lots of Jedis instances is not good enough because it means lots of sockets and connections, which leads to strange errors as well. 
 
 ### Using Jedis in a multithreaded environment
 To avoid problems mentioned above, you should use in this cases JedisPool, which is a threadsafe pool of reusable Jedis instances. This way you can overcome those strange errors and achieve great performance.
