@@ -49,10 +49,6 @@ Jedis is also distributed as a Maven Dependency through Sonatype. To configure t
 
 ## Basic usage
 
-### String or Binary
-Jedis can be used in two ways: strings or binary data as input. Redis examples refer much to Strings, and [[http://redis.io/topics/internals]] states that Redis is based on Strings as its basic building block. However, this may be misleading. "String" is understood in a broader sense, it refers to C char datatype which is 8 bit long, whereas Java characters are generally 16-bit. Redis sees only 8 bit blocks of data, which it doesn't interpret ("binary safe"). So, it's rather binary data that is native to Redis, not Java "Strings" which have to be encoded before being sent, and decoded after being retrieved, whereas byte[] are sent and retrieved directly. 
-Summarizing: Just don't encode your binary data into Strings, but use the binary versions.
-
 ### Regular Jedis is not threadsafe 
 You shouldn't use the same instance from different threads because you'll have strange errors. And sometimes creating lots of Jedis instances is not good enough because it means lots of sockets and connections, which leads to strange errors as well. 
 
@@ -85,6 +81,14 @@ pool.destroy();
 ```
 
 You should also take the time to adjust the Config() settings to your use case. By default, Jedis will close a connection after 300 seconds if it has not been returned.
+
+### A note about String and Binary - what is native?
+Redis/Jedis talks a lot about Strings. And here [[http://redis.io/topics/internals]] it says Strings are the basic building block of Redis. However, this stress on strings may be misleading. Redis' "String" refer to the C char type (8 bit), which is incompatible with Java Strings (16-bit). Redis sees only 8-bit blocks of data of predefined length, so normally it doesn't interpret the data (therefore it's "binary safe"). Therefore in Java, byte[] data is "native", whereas Strings have to be encoded before being sent, and decoded after being retrieved by the SafeEncoder.
+In short: if you have binary data, don't encode it into String! Use the binary versions. Your byte[] can be up to 1GB large.
+
+
+### A note on Redis' master/slave distribution
+A Redis netork consists of redis servers, which can be either masters or slaves. Slaves are synchronized to the master (master/slave replication). However, master and slaves look identical to a client, and slaves do accept write requests, but they will not be propagated "up-hill" and could eventually be overwritten by the master. It makes sense to route reads to slaves, and write demands to the master. Furthermore, being a slave doesn't prevent from being considered master by another slave. 
 
 ## Advanced usage
 
@@ -194,8 +198,7 @@ Note that subscribe is a blocking operation operation because it will poll Redis
 
 ### I need to use sharding, but I would like to hint Jedis to force certain keys to go to the same shard
 
-What you need is something called "keytags", and they are supported by Jedis.
-To work with keytags you just need to set a pattern when you instance ShardedJedis.
+What you need is something called "keytags", and they are supported by Jedis. To work with keytags you just need to set a pattern when you instance ShardedJedis.
 For example:
 ```java
 ShardedJedis jedis = new ShardedJedis(shards,
