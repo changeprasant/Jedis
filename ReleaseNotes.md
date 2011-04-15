@@ -1,6 +1,6 @@
 # Release Notes
 
-## Version 1.5.3  
+## Version 2.0 coming soon
 
 ## Version 1.5.2 (Februar 4th 2011) 
 + add JedisDataException and JedisConnectionException
