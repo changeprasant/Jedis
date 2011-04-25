@@ -4,7 +4,7 @@
 
 Check out the [[ReleaseNotes]].
 
-Reading [[Frequently-Asked-Questions]] might be useful.
+Reading [[FAQ]] might be useful.
 
 ### Installing Jedis
 In order to have Jedis as a dependency in your application you can:
