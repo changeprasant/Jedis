@@ -217,3 +217,27 @@ and
 jedis.set("car{bar}", "877878");
 ```
 will go to the same shard.
+
+### Monitoring
+To use the monitor command you can do something like the following:
+```java
+        new Thread(new Runnable() {
+            public void run() {
+                Jedis j = new Jedis("localhost");
+                for (int i = 0; i < 100; i++) {
+                    j.incr("foobared");
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                    }
+                }
+                j.disconnect();
+            }
+        }).start();
+
+        jedis.monitor(new JedisMonitor() {
+            public void onCommand(String command) {
+                System.out.println(command);
+            }
+        });
+```
