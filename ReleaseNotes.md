@@ -2,7 +2,7 @@
 
 ## Version 2.0.0 (May 30th 2011)
 + remove watch from transaction (Jonathan Leibiusky)
-+ Add binary responses to binary transaction (Jonathan Leibiusky)
++ Add binary responses to binary transaction (Ingvar Bogdahn)
 + binary jedis watch command accepts several keys (Jonathan Leibiusky)
 + On reconnection, select the correct db index (Jonathan Leibiusky)
 + hvals response type consistency, was Collection should have been List (Jonathan Leibiusky)
