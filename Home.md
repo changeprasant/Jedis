@@ -4,7 +4,6 @@
 
 Check out the [[ReleaseNotes]].
 
-Reading [[FAQ]] might be useful.
 
 ### Installing Jedis
 In order to have Jedis as a dependency in your application you can:
@@ -85,9 +84,11 @@ pool.destroy();
 You should also take the time to adjust the Config() settings to your use case. By default, Jedis will close a connection after 300 seconds if it has not been returned.
 
 ### A note about String and Binary - what is native?
-Redis/Jedis talks a lot about Strings. And here [[http://redis.io/topics/internals]] it says Strings are the basic building block of Redis. However, this stress on strings may be misleading. Redis' "String" refer to the C char type (8 bit), which is incompatible with Java Strings (16-bit). Redis sees only 8-bit blocks of data of predefined length, so normally it doesn't interpret the data (therefore it's "binary safe"). Therefore in Java, byte[] data is "native", whereas Strings have to be encoded before being sent, and decoded after being retrieved by the SafeEncoder.
+Redis/Jedis talks a lot about Strings. And here [[http://redis.io/topics/internals]] it says Strings are the basic building block of Redis. However, this stress on strings may be misleading. Redis' "String" refer to the C char type (8 bit), which is incompatible with Java Strings (16-bit). Redis sees only 8-bit blocks of data of predefined length, so normally it doesn't interpret the data (it's "binary safe"). Therefore in Java, byte[] data is "native", whereas Strings have to be encoded before being sent, and decoded after being retrieved by the SafeEncoder.
 In short: if you have binary data, don't encode it into String! Use the binary versions. Your byte[] can be up to 1GB large.
 
+###  Misc 
+Reading [[FAQ]] might be useful.
 
 ### A note on Redis' master/slave distribution
 A Redis netork consists of redis servers, which can be either masters or slaves. Slaves are synchronized to the master (master/slave replication). However, master and slaves look identical to a client, and slaves do accept write requests, but they will not be propagated "up-hill" and could eventually be overwritten by the master. It makes sense to route reads to slaves, and write demands to the master. Furthermore, being a slave doesn't prevent from being considered master by another slave. 
@@ -115,7 +116,7 @@ String result1 = SafeEncoder.encode(all.get(1)); // get the result of the first 
 
 
 
-Note 2: From versions 1.5.3 there is much improved support for transactions. It will have the optional possibility to get specific entries directly from the transaction without dealing with positions and conversions after t.exec() :
+Note 2: From version 2.0 there is a much improved support for transactions. It provides a convenient access the results of the transaction without the need to extract them of the List<Object> as showed above. Note that a Response Object does not contain the result before t.exec() is called (it is a kind of a Future).
 
 ```java
 Transaction t = jedis.multi();
