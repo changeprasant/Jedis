@@ -50,7 +50,7 @@ Jedis is also distributed as a Maven Dependency through Sonatype. To configure t
 You shouldn't use the same instance from different threads because you'll have strange errors. And sometimes creating lots of Jedis instances is not good enough because it means lots of sockets and connections, which leads to strange errors as well. 
 
 ### Using Jedis in a multithreaded environment
-To avoid problems mentioned above, you should use in this cases JedisPool, which is a threadsafe pool of reusable Jedis instances. This way you can overcome those strange errors and achieve great performance.
+To avoid the problems mentioned above, in these cases you should use JedisPool, which is a threadsafe pool of reusable Jedis instances. This way you can overcome those strange errors and achieve great performance.
 
 To use it, init a pool:
 ```java
