@@ -32,10 +32,6 @@ Just go to the Downloads section and use the latest Jedis JAR available.
 
 #### Apache Commons Dependency
 You will also need to download Apache Commons [[ http://commons.apache.org/pool/download_pool.cgi]] 
-and then: 
-```java
-import org.apache.commons.pool.impl.GenericObjectPool.Config;
-```
 
 #### Configure a Maven dependency
 Jedis is also distributed as a Maven Dependency through Sonatype. To configure that just add the following XML snippet to your pom.xml file.
@@ -43,7 +39,7 @@ Jedis is also distributed as a Maven Dependency through Sonatype. To configure t
     <dependency>
         <groupId>redis.clients</groupId>
         <artifactId>jedis</artifactId>
-        <version>1.5.2</version>
+        <version>2.0.0</version>
         <type>jar</type>
         <scope>compile</scope>
     </dependency>
@@ -58,12 +54,14 @@ To avoid problems mentioned above, you should use in this cases JedisPool, which
 
 To use it, init a pool:
 ```java
-JedisPool pool = new JedisPool(new Config(), "localhost");
+JedisPool pool = new JedisPool(new JedisPoolConfig(), "localhost");
 ```
 
-You can store the pool somewhere statically, it is threadsafe.
+You can store the pool somewhere statically, it is thread-safe. 
 
-And then you use it by:
+JedisPoolConfig includes a number of helpful Redis-specific connection pooling defaults. For example, Jedis with JedisPoolConfig will close a connection after 300 seconds if it has not been returned.
+
+You use it by:
 
 ```java
 Jedis jedis = pool.getResource();
@@ -81,7 +79,6 @@ try {
 pool.destroy();
 ```
 
-You should also take the time to adjust the Config() settings to your use case. By default, Jedis will close a connection after 300 seconds if it has not been returned.
 
 ### A note about String and Binary - what is native?
 Redis/Jedis talks a lot about Strings. And here [[http://redis.io/topics/internals]] it says Strings are the basic building block of Redis. However, this stress on strings may be misleading. Redis' "String" refer to the C char type (8 bit), which is incompatible with Java Strings (16-bit). Redis sees only 8-bit blocks of data of predefined length, so normally it doesn't interpret the data (it's "binary safe"). Therefore in Java, byte[] data is "native", whereas Strings have to be encoded before being sent, and decoded after being retrieved by the SafeEncoder.
