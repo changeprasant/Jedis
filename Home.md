@@ -88,12 +88,12 @@ In short: if you have binary data, don't encode it into String! Use the binary v
 Reading [[FAQ]] might be useful.
 
 ### A note on Redis' master/slave distribution
-A Redis netork consists of redis servers, which can be either masters or slaves. Slaves are synchronized to the master (master/slave replication). However, master and slaves look identical to a client, and slaves do accept write requests, but they will not be propagated "up-hill" and could eventually be overwritten by the master. It makes sense to route reads to slaves, and write demands to the master. Furthermore, being a slave doesn't prevent from being considered master by another slave. 
+A Redis network consists of redis servers, which can be either masters or slaves. Slaves are synchronized to the master (master/slave replication). However, master and slaves look identical to a client, and slaves do accept write requests, but they will not be propagated "up-hill" and could eventually be overwritten by the master. It makes sense to route reads to slaves, and write demands to the master. Furthermore, being a slave doesn't prevent from being considered master by another slave. 
 
 ## Advanced usage
 
 ###Transactions
-To do transactions in jedis, you have to wrap operations in a transaction block, very similar to pipelining:
+To do transactions in Jedis, you have to wrap operations in a transaction block, very similar to pipelining:
 
 ```java
 jedis.watch (key1, key2, ...);
