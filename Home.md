@@ -36,13 +36,15 @@ You will also need to download Apache Commons [[ http://commons.apache.org/pool/
 #### Configure a Maven dependency
 Jedis is also distributed as a Maven Dependency through Sonatype. To configure that just add the following XML snippet to your pom.xml file.
 
-    <dependency>
-        <groupId>redis.clients</groupId>
-        <artifactId>jedis</artifactId>
-        <version>2.0.0</version>
-        <type>jar</type>
-        <scope>compile</scope>
-    </dependency>
+```xml
+<dependency>
+    <groupId>redis.clients</groupId>
+    <artifactId>jedis</artifactId>
+    <version>2.0.0</version>
+    <type>jar</type>
+    <scope>compile</scope>
+</dependency>
+```
 
 ## Basic usage
 
@@ -219,23 +221,23 @@ will go to the same shard.
 ### Monitoring
 To use the monitor command you can do something like the following:
 ```java
-        new Thread(new Runnable() {
-            public void run() {
-                Jedis j = new Jedis("localhost");
-                for (int i = 0; i < 100; i++) {
-                    j.incr("foobared");
-                    try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
-                    }
-                }
-                j.disconnect();
+new Thread(new Runnable() {
+    public void run() {
+        Jedis j = new Jedis("localhost");
+        for (int i = 0; i < 100; i++) {
+            j.incr("foobared");
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
             }
-        }).start();
+        }
+        j.disconnect();
+    }
+}).start();
 
-        jedis.monitor(new JedisMonitor() {
-            public void onCommand(String command) {
-                System.out.println(command);
-            }
-        });
+jedis.monitor(new JedisMonitor() {
+    public void onCommand(String command) {
+        System.out.println(command);
+    }
+});
 ```
