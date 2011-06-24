@@ -43,7 +43,7 @@
 + Flush to socket when starting to read (Pieter Noordhuis)
 + Connect.connect() now honors timeout value (Mike Hobbs)
 
-## Version 1.5.2 (Februar 4th 2011) 
+## Version 1.5.2 (February 4th 2011) 
 + add JedisDataException and JedisConnectionException
 + add binary support for pubsub
 + pubsub command check if we are connected
