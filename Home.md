@@ -210,7 +210,7 @@ si = new JedisShardInfo("localhost", 6380);
 si.setPassword("foobared");
 shards.add(si);
 ```
-There are two ways of using ShardedJedis. Direct connections and by using ShardedJedisPool. The latter has to be used in a multithreaded environment.
+There are two ways of using ShardedJedis. Direct connections and by using ShardedJedisPool. For reliable operation, the latter has to be used in a multithreaded environment.
 
 Direct connection:
 ```java
@@ -219,7 +219,7 @@ jedis.set("a", "foo");
 jedis.disconnect;
 ```
 
-pooled connection
+Pooled connection:
 ```java
 ShardedJedisPool pool = new ShardedJedisPool(new Config(), shards);
 ShardedJedis jedis = pool.getResource();
@@ -232,7 +232,15 @@ pool.destroy;
 ```
 pool.returnResource should be called as soon as you are finished using jedis in a particular moment. If you don't, the pool will get slower after a while. getResource and returnResource are fast, since no new connection have to be created. Creation and destruction of a pool are slower, since theses are the actual network connections. Forgetting pool.destroy keeps the connection open until timeout is reached.
 
-### Force certain keys to go to the same shard
+
+#### Determine information of the shard of a particular key
+
+```java
+ShardInfo si = jedis.getShardInfo(key);
+si.getHost/getPort/getPassword/getTimeout/getName
+```
+
+#### Force certain keys to go to the same shard
 
 What you need is something called "keytags", and they are supported by Jedis. To work with keytags you just need to set a pattern when you instance ShardedJedis.
 For example:
