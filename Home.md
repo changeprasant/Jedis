@@ -197,8 +197,42 @@ jedis.subscribe(l, "foo");
 ```
 Note that subscribe is a blocking operation operation because it will poll Redis for responses on the thread that calls subscribe.  A single JedisPubSub instance can be used to subscribe to multiple channels.  You can call subscribe or psubscribe on an existing JedisPubSub instance to change your subscriptions.
 
+### ShardedJedis
+Sharding allows to distribute "responsability" of keys on the slaves (which then are called "shard"). This technique distributes the load. Sharding has limited functionality, i.e. you cannot do pipelining, transactions, pub/sub across shards, but it is feasible to do it only on a single shard.
 
-### I need to use sharding, but I would like to hint Jedis to force certain keys to go to the same shard
+First you have to define your shards:
+```java
+List<JedisShardInfo> shards = new ArrayList<JedisShardInfo>();
+JedisShardInfo si = new JedisShardInfo("localhost", 6379);
+si.setPassword("foobared");
+shards.add(si);
+si = new JedisShardInfo("localhost", 6380);
+si.setPassword("foobared");
+shards.add(si);
+```
+There are two ways of using ShardedJedis. Direct connections and by using ShardedJedisPool. The latter has to be used in a multithreaded environment.
+
+Direct connection:
+```java
+ShardedJedis jedis = new ShardedJedis(shards);
+jedis.set("a", "foo");
+jedis.disconnect;
+```
+
+pooled connection
+```java
+ShardedJedisPool pool = new ShardedJedisPool(new Config(), shards);
+ShardedJedis jedis = pool.getResource();
+jedis.set("a", "foo");
+pool.returnResource(jedis);
+ShardedJedis jedis = pool.getResource();
+jedis.set("z", "bar");
+pool.returnResource(jedis);
+pool.destroy;
+```
+pool.returnResource should be called as soon as you are finished using jedis in a particular moment. If you don't, the pool will get slower after a while. getResource and returnResource are fast, since no new connection have to be created. Creation and destruction of a pool are slower, since theses are the actual network connections. Forgetting pool.destroy keeps the connection open until timeout is reached.
+
+### Force certain keys to go to the same shard
 
 What you need is something called "keytags", and they are supported by Jedis. To work with keytags you just need to set a pattern when you instance ShardedJedis.
 For example:
