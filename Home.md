@@ -224,11 +224,13 @@ Pooled connection:
 ShardedJedisPool pool = new ShardedJedisPool(new Config(), shards);
 ShardedJedis jedis = pool.getResource();
 jedis.set("a", "foo");
+.... // do your work here
 pool.returnResource(jedis);
-ShardedJedis jedis = pool.getResource();
+.... // a few moments later
+ShardedJedis jedis2 = pool.getResource();
 jedis.set("z", "bar");
 pool.returnResource(jedis);
-pool.destroy;
+pool.destroy();
 ```
 pool.returnResource should be called as soon as you are finished using jedis in a particular moment. If you don't, the pool will get slower after a while. getResource and returnResource are fast, since no new connection have to be created. Creation and destruction of a pool are slower, since theses are the actual network connections. Forgetting pool.destroy keeps the connection open until timeout is reached.
 
