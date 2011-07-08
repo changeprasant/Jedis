@@ -82,16 +82,6 @@ pool.destroy();
 ```
 
 
-### A note about String and Binary - what is native?
-Redis/Jedis talks a lot about Strings. And here [[http://redis.io/topics/internals]] it says Strings are the basic building block of Redis. However, this stress on strings may be misleading. Redis' "String" refer to the C char type (8 bit), which is incompatible with Java Strings (16-bit). Redis sees only 8-bit blocks of data of predefined length, so normally it doesn't interpret the data (it's "binary safe"). Therefore in Java, byte[] data is "native", whereas Strings have to be encoded before being sent, and decoded after being retrieved by the SafeEncoder.
-In short: if you have binary data, don't encode it into String! Use the binary versions. Your byte[] can be up to 1GB large.
-
-###  Misc 
-Reading [[FAQ]] might be useful.
-
-### A note on Redis' master/slave distribution
-A Redis network consists of redis servers, which can be either masters or slaves. Slaves are synchronized to the master (master/slave replication). However, master and slaves look identical to a client, and slaves do accept write requests, but they will not be propagated "up-hill" and could eventually be overwritten by the master. It makes sense to route reads to slaves, and write demands to the master. Furthermore, being a slave doesn't prevent from being considered master by another slave. 
-
 ## Advanced usage
 
 ###Transactions
@@ -285,3 +275,15 @@ jedis.monitor(new JedisMonitor() {
     }
 });
 ```
+
+##  Misc 
+
+### A note about String and Binary - what is native?
+Redis/Jedis talks a lot about Strings. And here [[http://redis.io/topics/internals]] it says Strings are the basic building block of Redis. However, this stress on strings may be misleading. Redis' "String" refer to the C char type (8 bit), which is incompatible with Java Strings (16-bit). Redis sees only 8-bit blocks of data of predefined length, so normally it doesn't interpret the data (it's "binary safe"). Therefore in Java, byte[] data is "native", whereas Strings have to be encoded before being sent, and decoded after being retrieved by the SafeEncoder. This can have a considerable performance impact.
+In short: if you have binary data, don't encode it into String, but use the binary versions.
+
+### A note on Redis' master/slave distribution
+A Redis network consists of redis servers, which can be either masters or slaves. Slaves are synchronized to the master (master/slave replication). However, master and slaves look identical to a client, and slaves do accept write requests, but they will not be propagated "up-hill" and could eventually be overwritten by the master. It makes sense to route reads to slaves, and write demands to the master. Furthermore, being a slave doesn't prevent from being considered master by another slave. 
+
+####[Redis: under the hood](http://pauladamsmith.com/articles/redis-under-the-hood.html)
+#### Reading [[FAQ]] might be useful.
