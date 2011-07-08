@@ -188,9 +188,16 @@ jedis.subscribe(l, "foo");
 Note that subscribe is a blocking operation operation because it will poll Redis for responses on the thread that calls subscribe.  A single JedisPubSub instance can be used to subscribe to multiple channels.  You can call subscribe or psubscribe on an existing JedisPubSub instance to change your subscriptions.
 
 ### ShardedJedis
-Sharding allows to distribute "responsability" of keys on the slaves (which then are called "shard"). This technique distributes the load. Sharding has limited functionality, i.e. you cannot do pipelining, transactions, pub/sub across shards, but it is feasible to do it only on a single shard.
+####Motivation
+In the normal master slave approach, you have many slaves that serve read requests but only one master that serves write requests. Furthermore, you have to come up with your own plan to actually distribute the load on the slaves. In Sharded jedis you achieve scalability for both reads and writes.  Sharding assigns the keys equally on a set of redis servers according to some hash algorithm (md5 and murmur, the latter being less standard, but faster). A node like this is then called a "shard". 
+####The downside 
+is that, since each shard is a separate master, sharding has limited functionality: i.e. you cannot do transactions, pipelining, pub/sub across shards! However, generally it is feasible to do a not allowed operation, as long as the concerned keys are on the same shard (check / ask the forum). You can influence which key go to which shard by keytags (see below).
 
-First you have to define your shards:
+If you want effective load distribution of ShardedJedis, but still need transactions/pipelining/pubsub etc, you can also mix the normal and the sharded approach: define a master as normal Jedis, the others as sharded Jedis. Then make all the shards slaveof master. In your application, direct your write requests to the master, the read requests to ShardedJedis. Your writes don't scale anymore, but you gain good read distribution, and you have transactions/pipelining/pubsub.
+
+Here is the general proceeding:
+
+#### 1. Define your shards:
 ```java
 List<JedisShardInfo> shards = new ArrayList<JedisShardInfo>();
 JedisShardInfo si = new JedisShardInfo("localhost", 6379);
@@ -200,16 +207,17 @@ si = new JedisShardInfo("localhost", 6380);
 si.setPassword("foobared");
 shards.add(si);
 ```
-There are two ways of using ShardedJedis. Direct connections and by using ShardedJedisPool. For reliable operation, the latter has to be used in a multithreaded environment.
 
-Direct connection:
+Then, there are two ways of using ShardedJedis. Direct connections or by using ShardedJedisPool. For reliable operation, the latter has to be used in a multithreaded environment.
+
+#### 2.a) Direct connection:
 ```java
 ShardedJedis jedis = new ShardedJedis(shards);
 jedis.set("a", "foo");
 jedis.disconnect;
 ```
 
-Pooled connection:
+#### 2.b) Pooled connection:
 ```java
 ShardedJedisPool pool = new ShardedJedisPool(new Config(), shards);
 ShardedJedis jedis = pool.getResource();
@@ -222,7 +230,9 @@ jedis.set("z", "bar");
 pool.returnResource(jedis);
 pool.destroy();
 ```
-pool.returnResource should be called as soon as you are finished using jedis in a particular moment. If you don't, the pool will get slower after a while. getResource and returnResource are fast, since no new connection have to be created. Creation and destruction of a pool are slower, since theses are the actual network connections. Forgetting pool.destroy keeps the connection open until timeout is reached.
+
+#### 3. Disconnect / returnRessource
+pool.returnResource should be called as soon as you are finished using jedis in a particular moment. If you don't, the pool may get slower after a while. getResource and returnResource are fast, since no new connection have to be created. Creation and destruction of a pool are slower, since theses are the actual network connections. Forgetting pool.destroy keeps the connection open until timeout is reached.
 
 
 #### Determine information of the shard of a particular key
@@ -233,7 +243,6 @@ si.getHost/getPort/getPassword/getTimeout/getName
 ```
 
 #### Force certain keys to go to the same shard
-
 What you need is something called "keytags", and they are supported by Jedis. To work with keytags you just need to set a pattern when you instance ShardedJedis.
 For example:
 ```java
