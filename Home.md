@@ -190,8 +190,12 @@ Note that subscribe is a blocking operation operation because it will poll Redis
 ### ShardedJedis
 ####Motivation
 In the normal master slave approach, you have many slaves that serve read requests but only one master that serves write requests. Furthermore, you have to come up with your own plan to actually distribute the load on the slaves. In Sharded jedis you achieve scalability for both reads and writes.  Sharding assigns the keys equally on a set of redis servers according to some hash algorithm (md5 and murmur, the latter being less standard, but faster). A node like this is then called a "shard". 
+
 ####The downside 
 is that, since each shard is a separate master, sharding has limited functionality: i.e. you cannot do transactions, pipelining, pub/sub across shards! However, generally it is feasible to do a not allowed operation, as long as the concerned keys are on the same shard (check / ask the forum). You can influence which key go to which shard by keytags (see below).
+
+#### Redis Cluster
+Sometime later 2011, there will be first versions of "redis cluster" which will be a much improved Sharded Jedis and should give back some if not all of the Redis functionalities you cannot have with shardedJedis. If you want to know more about redis cluster, youtube has a presentation of Salvatore Sanfilippo (the creator of Redis).
 
 #### A compromise
 If you want easy load distribution of ShardedJedis, but still need transactions/pipelining/pubsub etc, you can also mix the normal and the sharded approach: define a master as normal Jedis, the others as sharded Jedis. Then make all the shards slaveof master. In your application, direct your write requests to the master, the read requests to ShardedJedis. Your writes don't scale anymore, but you gain good read distribution, and you have transactions/pipelining/pubsub. Remember that you can improve performance of the master a lot, if you let the slaves do the persistance for the master!
