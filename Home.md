@@ -192,27 +192,9 @@ In the normal Redis master-slave approach, generally there is one master that se
 Since each shard is a separate master, sharding has limited functionality: i.e. you cannot use transactions, pipelining, pub/sub, especially not across shards! However, generally it is feasible to do a not allowed operation, as long as the concerned keys are on the same shard (check / ask the forum). You can influence which key go to which shard by keytags (see below). A further downside is that in the current standard implementation, shards cannot be added or removed from a running ShardedJedis. 
 If you need this feature, there is an experimental reimplementation of ShardedJedis which allows adding and removing shards of a running ShardedJedis: [yaourt - dynamic sharding implementation](https://github.com/xetorthio/jedis/pull/174)
 
-#### Compromise
-If you want easy load distribution of ShardedJedis, but still need transactions/pipelining/pubsub etc, you can also mix the normal and the sharded approach: define a master as normal Jedis, the others as sharded Jedis. Then make all the shards slaveof master. In your application, direct your write requests to the master, the read requests to ShardedJedis. Your writes don't scale anymore, but you gain good read distribution, and you have transactions/pipelining/pubsub simply using the master. Dataset should fit in RAM of master. Remember that you can improve performance of the master a lot, if you let the slaves do the persistance for the master!
+####General Usage:
 
-####Alternatives
-##### RoundRobin
-There is another, very simple but effective strategy for distribution: "RoundRobin" simply cycles through the available slaves. 
-The advantage is that no hashing/mapping occurs, and distribution is independent on the key name, hence more equal especially if particular keys are used more frequently at certain times. 
-In future versions, it will allow to add and remove slaves at runtime, tuneable redundancy, and simultaneous multi-slave download of i.e. bigger lists/sortedsets. This is not possible with ShardedJedis.
-The downside is that unlike ShardedJedis RoundRobin does not allow scaling of writes, it only manages the master-slave setting. Furthermore, each slave has to manage the whole dataset, hence for optimal performance, RAM should be 1x, not 1/n of total dataset size. Since it is not yet part of official jedis, you have to build Jedis from source and add "[RoundRobinPool](https://gist.github.com/1084272)" before make. Just as with JedisPool, call getRessource() on it to get a Jedis instance and don't forget returnResource after usage. Note, you only distribute the load by cycling through the slaves if you do get/returnResource frequently. For convenience and other reasons, consider UnifiedJedis.
-
-##### UnifiedJedis
-The utility class [UnifiedJedis](https://gist.github.com/1159990) abstracts away the pool operations and also greatly simplifies the general usage of Jedis: you use it just as a fully operational Jedis, but under the hood it delegates writes to the master, and reads to cycling Jedis instances using RoundRobinPool. Besides making distribution transparent, it also avoids difficult to track errors: if by negligence you direct a write process to a slave, there is no error, the slave accepts and saves it just fine, but the change is not replicated and eventually overwritten. This can no longer happen. Furthermore, since it calls get/returnResource for each single Jedis method of both master and RoundRobin, exhaustion of the pool by forgetting or delaying returnResource is avoided, and load is distributed very equally. You have to build Jedis from source and add RoundRobinPool and UnifiedJedis class files before make. Note that for advanced functions like transactions/pipeline and pubsub, you currently you have to obtain a Jedis instance of the master manually like so: Jedis master = uj.getWritePool().getResource()   and after usage:  uj.getWritePool().returnResource(master);
-UnifiedJedis maybe one day adapted for ShardedJedis too.
-
-#### Redis Cluster
-Sometime later 2011, there will be first versions of "redis cluster" which will be a much improved Sharded Jedis and should give back some if not all of the Redis functionalities you cannot have with shardedJedis. If you want to know more about redis cluster, youtube has a presentation of Salvatore Sanfilippo (the creator of Redis).
-
-
-Here is the general proceeding:
-
-#### 1. Define your shards:
+##### 1. Define your shards:
 ```java
 List<JedisShardInfo> shards = new ArrayList<JedisShardInfo>();
 JedisShardInfo si = new JedisShardInfo("localhost", 6379);
@@ -232,7 +214,7 @@ jedis.set("a", "foo");
 jedis.disconnect;
 ```
 
-#### 2.b) Pooled connection:
+##### 2.b) Pooled connection:
 ```java
 ShardedJedisPool pool = new ShardedJedisPool(new Config(), shards);
 ShardedJedis jedis = pool.getResource();
@@ -246,18 +228,18 @@ pool.returnResource(jedis);
 pool.destroy();
 ```
 
-#### 3. Disconnect / returnRessource
+##### 3. Disconnect / returnRessource
 pool.returnResource should be called as soon as you are finished using jedis in a particular moment. If you don't, the pool may get slower after a while. getResource and returnResource are fast, since no new connection have to be created. Creation and destruction of a pool are slower, since theses are the actual network connections. Forgetting pool.destroy keeps the connection open until timeout is reached.
 
 
-#### Determine information of the shard of a particular key
+##### Determine information of the shard of a particular key
 
 ```java
 ShardInfo si = jedis.getShardInfo(key);
 si.getHost/getPort/getPassword/getTimeout/getName
 ```
 
-#### Force certain keys to go to the same shard
+##### Force certain keys to go to the same shard
 What you need is something called "keytags", and they are supported by Jedis. To work with keytags you just need to set a pattern when you instance ShardedJedis.
 For example:
 ```java
@@ -275,6 +257,27 @@ and
 jedis.set("car{bar}", "877878");
 ```
 will go to the same shard.
+
+
+#### Compromise
+If you want easy load distribution of ShardedJedis, but still need transactions/pipelining/pubsub etc, you can also mix the normal and the sharded approach: define a master as normal Jedis, the others as sharded Jedis. Then make all the shards slaveof master. In your application, direct your write requests to the master, the read requests to ShardedJedis. Your writes don't scale anymore, but you gain good read distribution, and you have transactions/pipelining/pubsub simply using the master. Dataset should fit in RAM of master. Remember that you can improve performance of the master a lot, if you let the slaves do the persistance for the master!
+
+
+
+####Alternatives
+##### RoundRobin
+There is another, very simple but effective strategy for distribution: "RoundRobin" simply cycles through the available slaves. 
+The advantage is that no hashing/mapping occurs, and distribution is independent on the key name, hence more equal especially if particular keys are used more frequently at certain times. 
+In future versions, it will allow to add and remove slaves at runtime, tuneable redundancy, and simultaneous multi-slave download of i.e. bigger lists/sortedsets. This is not possible with ShardedJedis.
+The downside is that unlike ShardedJedis RoundRobin does not allow scaling of writes, it only manages the master-slave setting. Furthermore, each slave has to manage the whole dataset, hence for optimal performance, RAM should be 1x, not 1/n of total dataset size. Since it is not yet part of official jedis, you have to build Jedis from source and add "[RoundRobinPool](https://gist.github.com/1084272)" before make. Just as with JedisPool, call getRessource() on it to get a Jedis instance and don't forget returnResource after usage. Note, you only distribute the load by cycling through the slaves if you do get/returnResource frequently. For convenience and other reasons, consider UnifiedJedis.
+
+##### UnifiedJedis
+The utility class [UnifiedJedis](https://gist.github.com/1159990) abstracts away the pool operations and also greatly simplifies the general usage of Jedis: you use it just as a fully operational Jedis, but under the hood it delegates writes to the master, and reads to cycling Jedis instances using RoundRobinPool. Besides making distribution transparent, it also avoids difficult to track errors: if by negligence you direct a write process to a slave, there is no error, the slave accepts and saves it just fine, but the change is not replicated and eventually overwritten. This can no longer happen. Furthermore, since it calls get/returnResource for each single Jedis method of both master and RoundRobin, exhaustion of the pool by forgetting or delaying returnResource is avoided, and load is distributed very equally. You have to build Jedis from source and add RoundRobinPool and UnifiedJedis class files before make. Note that for advanced functions like transactions/pipeline and pubsub, you currently you have to obtain a Jedis instance of the master manually like so: Jedis master = uj.getWritePool().getResource()   and after usage:  uj.getWritePool().returnResource(master);
+UnifiedJedis maybe one day adapted for ShardedJedis too.
+
+#### Redis Cluster
+Sometime later 2011, there will be first versions of "redis cluster" which will be a much improved Sharded Jedis and should give back some if not all of the Redis functionalities you cannot have with shardedJedis. If you want to know more about redis cluster, youtube has a presentation of Salvatore Sanfilippo (the creator of Redis).
+
 
 ### Monitoring
 To use the monitor command you can do something like the following:
