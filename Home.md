@@ -93,16 +93,6 @@ t.exec();
 
 Note: when you have any method that returns values, you have to do like this:
 
-```java
-t.get("foo");
-t.hgetAll("car");
-List<Object> all = t.exec();
-String result1 = SafeEncoder.encode(all.get(1)); // get the result of the first get in the transaction.
-```
-
-
-
-Note 2: From version 2.0 there is a much improved support for transactions. It provides a convenient access the results of the transaction without the need to extract them of the List<Object> as showed above. Note that a Response Object does not contain the result before t.exec() is called (it is a kind of a Future).
 
 ```java
 Transaction t = jedis.multi();
@@ -117,26 +107,15 @@ String foolbar = result1.get());                       // use Response.get() to 
 int soseSize = sose.get().size();                      // on sose.get() you can directly call Set methods!
 
 // List<Object> allResults = t.exec();    	    	// you could still get all results at once, as before
-int wontwork = allResults.get(5).size();                // but this won't work to access the set. see above
 ```
+Note that a Response Object does not contain the result before t.exec() is called (it is a kind of a Future). Forgetting exec gives you exceptions. In the last lines, you see how transactions/pipelines were dealt with before version 2. You can still do it that way, but then you need to extract objects from a list, which contains also Redis status messages.
 
 
 ### Pipelining
 
 Sometimes you need to send a bunch of different commands. A very cool way to do that, and have better performance than doing it the naive way, is to use pipelining. This way you send commands without waiting for response, and you actually read the responses at the end, which is faster. 
 
-Here is how to do it (very similar to transactions):
-
-```java
-Pipeline p = jedis.pipelined();
-p.set("foo", "bar");
-p.get("foo");
-List<Object> results = p.exec();
-String result1 = SafeEncoder.encode(results.get(1)); // get the result of the first get in the pipeline.
-
-```
-
-From version 1.5.3 there is a much more convenient way for creating pipelines, without the need to deal with positions and conversions after p.exec()  :
+Here is how to do it:
 
 ```java
 Pipeline p = jedis.pipelined();
@@ -149,8 +128,8 @@ p.sync();
 int soseSize = sose.get().size();
 Set<String> setBack = sose.get();
 ```
-
 For more explanations see code comments in the transaction section.
+
 
 ### Publish/Subscribe
 
