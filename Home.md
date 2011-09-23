@@ -1,50 +1,16 @@
 # Welcome to the jedis wiki!
 
-## Getting started
+## [[ReleaseNotes]].
 
-Check out the [[ReleaseNotes]].
+##[[Getting-started]]
+
+* where to get the jar of jedis,
+
+* how to clone and build the source, 
+
+* where to get the Apache Commons depency.
 
 
-### Installing Jedis
-In order to have Jedis as a dependency in your application you can:
-
-#### Clone the github project and compile the code
-That is very easy, you just need to:
-```
-    git clone git://github.com/xetorthio/jedis.git
-```
-
-Before you package it using maven, for the tests to succeed, you need to have two Redis server instances running. Simply use the two Redis conf files in the conf directory with your up-to-date redis build. On two separate command lines, just run:
-```
-redis-server jedis/conf/redis.conf
-redis-server jedis/conf/redis2.conf
-```
-(one is on the default port (6379) and the other on 6380, both with "foobared" as password)
-
-then finally run
-```
-    mvn package
-```
-to build, run the tests and package. 
- 
-#### Download the JAR from github
-Just go to the Downloads section and use the latest Jedis JAR available.
-
-#### Apache Commons Dependency
-You will also need to download Apache Commons [[ http://commons.apache.org/pool/download_pool.cgi]] 
-
-#### Configure a Maven dependency
-Jedis is also distributed as a Maven Dependency through Sonatype. To configure that just add the following XML snippet to your pom.xml file.
-
-```xml
-<dependency>
-    <groupId>redis.clients</groupId>
-    <artifactId>jedis</artifactId>
-    <version>2.0.0</version>
-    <type>jar</type>
-    <scope>compile</scope>
-</dependency>
-```
 
 ## Basic usage
 ### Using Jedis in a multithreaded environment
