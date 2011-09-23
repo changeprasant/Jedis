@@ -37,7 +37,8 @@ Jedis is also distributed as a Maven Dependency through Sonatype. To configure t
     <scope>compile</scope>
 </dependency>
 ```
-## Basic usage example - using Jedis in a multithreaded environment
+## Basic usage example 
+###using Jedis in a multithreaded environment
 You shouldn't use the same instance from different threads because you'll have strange errors. And sometimes creating lots of Jedis instances is not good enough because it means lots of sockets and connections, which leads to strange errors as well. A single Jedis instance is not threadsafe!
 To avoid these problems, you should use JedisPool, which is a threadsafe pool of network connections. You can use the pool to reliably create several Jedis instances, given you return the Jedis instance to the pool when done. This way you can overcome those strange errors and achieve great performance.
 
@@ -66,4 +67,30 @@ try {
 }
 /// ... when closing your application:
 pool.destroy();
+```
+
+###Setting up master/slave distribution 
+####enable replication
+Redis is primarily built for master/slave distribution. This means that write requests have to be explicetely adressed to the master (a redis server), which replicates changes to slaves (which are also redis servers). Read requests then can be (but must not necessarily) adressed to the slaves, which alleviates the master.
+
+You use the master as shown above. In order to enable replication, there are two ways to tell a slave it will be "slaveOf" a given master: 
+
+* Specify it in the respective section in the Redis Config file of the redis server
+
+* on a given jedis instance (see above), call the slaveOf method and pass IP (or "localhost") and port as argument:
+
+```java
+jedis.slaveOf("localhost", 6379);  //  if the master is on the same PC which runs your code
+jedis.slaveOf("192.168.1.35", 6379); 
+```
+
+Note: since slaves are also normal redis servers, they accept write requests without error, but the changes won't be replicated, and hence those changes are at risk to be silently overwritten, if you mix up your jedis instances.
+
+####disable replication / upon failing master, promote a slave
+
+In case your master goes down, you may want to promote a slave to be the new master. You should first (try to) disable replication of the offline master first, then, in case you have several slaves, enable replication of the remaining slaves to the new master:
+
+```java
+slave1jedis.slaveofNoOne();
+slave2jedis.slaveOf("192.168.1.36", 6379); 
 ```
