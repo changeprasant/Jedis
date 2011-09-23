@@ -180,6 +180,7 @@ Sometime later 2011, there will be first versions of "redis cluster" which will 
 
 ### Monitoring
 To use the monitor command you can do something like the following:
+
 ```java
 new Thread(new Runnable() {
     public void run() {
