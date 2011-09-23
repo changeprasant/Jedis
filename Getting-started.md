@@ -3,7 +3,8 @@
 # Installing Jedis
 In order to have Jedis as a dependency in your application you can:
 ## Use the jar files
-download the [jedis jar](https://github.com/xetorthio/jedis/archives/master) and the [Apache Commons dependency](http://commons.apache.org/pool/download_pool.cgi)
+download the [jedis jar](https://github.com/xetorthio/jedis/archives/master) and the [Apache Commons dependency](http://commons.apache.org/pool/download_pool.cgi). 
+Import  org.apache.commons.pool.impl.GenericObjectPool and GenericObjectPool.Config.
 
 ## build from source 
 This gives you the most recent version. 
