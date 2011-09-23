@@ -29,6 +29,18 @@ int soseSize = sose.get().size();                      // on sose.get() you can 
 ```
 Note that a Response Object does not contain the result before t.exec() is called (it is a kind of a Future). Forgetting exec gives you exceptions. In the last lines, you see how transactions/pipelines were dealt with before version 2. You can still do it that way, but then you need to extract objects from a list, which contains also Redis status messages.
 
+Note 2: Redis does not allow to read use intermediate results of a transaction within a transaction. This does not work:
+```java
+// this does not work! Intra-transaction dependencies are not supported by Redis
+jedis.watch(...);
+Transaction t = jedis.multi();
+if(t.get("key1").equals("something");
+   t.set("key2", "value2").
+else 
+   t.set("key", "value");
+```
+However, there are some commands like setnx, that include such a conditional execution. Those are of course supported within transactions. Soon, you'll be able to build your own customized commands using eval/ LUA scripting. 
+
 
 ## Pipelining
 
