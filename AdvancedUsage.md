@@ -214,8 +214,7 @@ A Redis network consists of redis servers, which can be either masters or slaves
   
 ### RoundRobin - alternative distribution strategy
 There is another, very simple but effective strategy for distribution: "RoundRobin" simply cycles through the available slaves. 
-The advantage is that no hashing/mapping occurs, and distribution is independent on the key name, hence more equal especially if particular keys are used more frequently at certain times. 
-In future versions, it will allow to add and remove slaves at runtime, tuneable redundancy, and simultaneous multi-slave download of i.e. bigger lists/sortedsets. This is not possible with ShardedJedis.
+The advantage is that no hashing/mapping occurs, and distribution is independent of the key name. Therefore, load is distributed more equally, especially if acesses to keys are not equally distributed in time (which is typically the case). In future versions, it will allow to add and remove slaves at runtime, tuneable redundancy, and simultaneous multi-slave download of i.e. bigger lists/sortedsets. This is not possible with ShardedJedis.
 The downside is that unlike ShardedJedis RoundRobin does not allow scaling of writes, it only manages the master-slave setting. Furthermore, each slave has to manage the whole dataset, hence for optimal performance, RAM should be 1x, not 1/n of total dataset size. Since it is not yet part of official jedis, you have to build Jedis from source and add "[RoundRobinPool](https://gist.github.com/1084272)" before make. Just as with JedisPool, call getRessource() on it to get a Jedis instance and don't forget returnResource after usage. Note, you only distribute the load by cycling through the slaves if you do get/returnResource frequently. For convenience and other reasons, consider UnifiedJedis.
 
 ### UnifiedJedis
