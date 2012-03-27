@@ -7,7 +7,7 @@
 * Setting up
     - where to get the jar of jedis,
     - how to clone and build the source, 
-    - where to get the Apache Commons depency.
+    - where to get the Apache Commons dependency.
 
 * basic usage 
     - jedis in a multithreaded environment
