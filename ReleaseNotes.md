@@ -1,5 +1,12 @@
 # Release Notes
 
+## Version 2.1.0 (May 10th 2012)
++ Support for Scripting
++ Support for Variadic commands
++ Support for new Object commands
++ Support for Slowlog commands
++ Lots and lots of bug fixes.
+
 ## Version 2.0.0 (May 30th 2011)
 + remove watch from transaction (Jonathan Leibiusky)
 + Add binary responses to binary transaction (Ingvar Bogdahn)
