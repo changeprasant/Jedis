@@ -22,7 +22,7 @@ t.zadd("foo", 1, "barowitch"); t.zadd("foo", 0, "barinsky"); t.zadd("foo", 0, "b
 Response<Set<String>> sose = t.zrange("foo", 0, -1);   // get the entire sortedset
 t.exec();                                              // dont forget it
 
-String foolbar = result1.get());                       // use Response.get() to retrieve things from a Response
+String foolbar = result1.get();                       // use Response.get() to retrieve things from a Response
 int soseSize = sose.get().size();                      // on sose.get() you can directly call Set methods!
 
 // List<Object> allResults = t.exec();    	    	// you could still get all results at once, as before
