@@ -72,7 +72,7 @@ pool.destroy();
 
 ###Setting up master/slave distribution 
 ####enable replication
-Redis is primarily built for master/slave distribution. This means that write requests have to be explicetely adressed to the master (a redis server), which replicates changes to slaves (which are also redis servers). Read requests then can be (but must not necessarily) adressed to the slaves, which alleviates the master.
+Redis is primarily built for master/slave distribution. This means that write requests have to be explicitly addressed to the master (a redis server), which replicates changes to slaves (which are also redis servers). Read requests then can be (but must not necessarily) addressed to the slaves, which alleviates the master.
 
 You use the master as shown above. In order to enable replication, there are two ways to tell a slave it will be "slaveOf" a given master: 
 
