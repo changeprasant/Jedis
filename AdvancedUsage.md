@@ -94,7 +94,7 @@ MyListener l = new MyListener();
 
 jedis.subscribe(l, "foo");
 ```
-Note that subscribe is a blocking operation operation because it will poll Redis for responses on the thread that calls subscribe.  A single JedisPubSub instance can be used to subscribe to multiple channels.  You can call subscribe or psubscribe on an existing JedisPubSub instance to change your subscriptions.
+Note that subscribe is a blocking operation because it will poll Redis for responses on the thread that calls subscribe.  A single JedisPubSub instance can be used to subscribe to multiple channels.  You can call subscribe or psubscribe on an existing JedisPubSub instance to change your subscriptions.
 
 ## ShardedJedis
 ###Motivation
