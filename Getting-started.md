@@ -62,6 +62,9 @@ try {
   String foobar = jedis.get("foo");
   jedis.zadd("sose", 0, "car"); jedis.zadd("sose", 0, "bike"); 
   Set<String> sose = jedis.zrange("sose", 0, -1);
+} catch (JedisConnectionException e) {
+    // returnBrokenResource when the state of the object is unrecoverable
+    pool.returnBrokenResource(jedis);
 } finally {
   /// ... it's important to return the Jedis instance to the pool once you've finished using it
   pool.returnResource(jedis);
