@@ -64,10 +64,14 @@ try {
   Set<String> sose = jedis.zrange("sose", 0, -1);
 } catch (JedisConnectionException e) {
     // returnBrokenResource when the state of the object is unrecoverable
-    pool.returnBrokenResource(jedis);
+    if (null != jedis) {
+    	pool.returnBrokenResource(jedis);
+    	jedis = null;
+    }
 } finally {
   /// ... it's important to return the Jedis instance to the pool once you've finished using it
-  pool.returnResource(jedis);
+  if (null != jedis)
+  	pool.returnResource(jedis);
 }
 /// ... when closing your application:
 pool.destroy();
