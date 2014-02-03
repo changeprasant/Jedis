@@ -2,7 +2,8 @@
 
 ## Version 2.3.0 (February 3rd 2014)
 + Support for [Redis Cluster](http://redis.io/topics/cluster-spec)
-+ Implement [SCAN command](http://redis.io/commands/scan)                                                                                                                                                                                                            
++ Implement [SCAN command](http://redis.io/commands/scan)
++ Implement [WAIT command](http://antirez.com/news/66)                                                                                                                                                                                                            
 + Implement [PUBSUB command](http://redis.io/commands/pubsub)
 + Upgrade to [Apache Commons Pool 2](http://commons.apache.org/proper/commons-pool/)
 + And lots of small bugfixes and improvements
