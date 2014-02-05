@@ -1,5 +1,7 @@
 # Release Notes
 
+## This page is deprecated. Please use [the official github release section for jedis project](https://github.com/xetorthio/jedis/releases).
+
 ## Version 2.3.0 (February 3rd 2014)
 + Support for [Redis Cluster](http://redis.io/topics/cluster-spec)
 + Implement [SCAN command](http://redis.io/commands/scan)
