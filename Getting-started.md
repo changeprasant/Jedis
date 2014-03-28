@@ -28,8 +28,11 @@ Jedis is also distributed as a Maven Dependency through Sonatype. To configure t
 ```
 ## Basic usage example 
 ###using Jedis in a multithreaded environment
-You shouldn't use the same instance from different threads because you'll have strange errors. And sometimes creating lots of Jedis instances is not good enough because it means lots of sockets and connections, which leads to strange errors as well. A single Jedis instance is not threadsafe!
-To avoid these problems, you should use JedisPool, which is a threadsafe pool of network connections. You can use the pool to reliably create several Jedis instances, given you return the Jedis instance to the pool when done. This way you can overcome those strange errors and achieve great performance.
+You shouldn't use the same instance from different threads because you'll have strange errors. 
+And sometimes creating lots of Jedis instances is not good enough because it means lots of sockets and connections, which leads to strange errors as well. 
+```A single Jedis instance is not threadsafe!```
+To avoid these problems, you should use JedisPool, which is a threadsafe pool of network connections. 
+You can use the pool to reliably create several Jedis instances, given you return the Jedis instance to the pool when done. This way you can overcome those strange errors and achieve great performance.
 
 To use it, init a pool:
 ```java
