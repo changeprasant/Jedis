@@ -9,9 +9,7 @@ download the [latest jedis jar at search.maven.org](http://search.maven.org/#art
 This gives you the most recent version. 
 ### Clone the github project. 
 That is very easy, on the commandline you just need to:
-```
-    git clone git://github.com/xetorthio/jedis.git
-```
+```git clone git://github.com/xetorthio/jedis.git```
 ### build
 Before you package it using maven, you have to pass the tests.
 To run the tests and package, run ```make package```.
