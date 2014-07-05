@@ -21,7 +21,7 @@ Jedis is also distributed as a Maven Dependency through Sonatype. To configure t
 <dependency>
     <groupId>redis.clients</groupId>
     <artifactId>jedis</artifactId>
-    <version>2.4.2</version>
+    <version>2.5.1</version>
     <type>jar</type>
     <scope>compile</scope>
 </dependency>
@@ -53,16 +53,11 @@ try {
   String foobar = jedis.get("foo");
   jedis.zadd("sose", 0, "car"); jedis.zadd("sose", 0, "bike"); 
   Set<String> sose = jedis.zrange("sose", 0, -1);
-} catch (JedisConnectionException e) {
-    // returnBrokenResource when the state of the object is unrecoverable
-    if (null != jedis) {
-    	pool.returnBrokenResource(jedis);
-    	jedis = null;
-    }
 } finally {
-  /// ... it's important to return the Jedis instance to the pool once you've finished using it
-  if (null != jedis)
-  	pool.returnResource(jedis);
+  /// ... it's time to release alive/broken Jedis instance...
+  if (null != jedis) {
+    jedis.close();
+  }
 }
 /// ... when closing your application:
 pool.destroy();
