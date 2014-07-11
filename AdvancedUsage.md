@@ -5,7 +5,7 @@ To do transactions in Jedis, you have to wrap operations in a transaction block,
 
 ```java
 jedis.watch (key1, key2, ...);
-BinaryTransaction t = jedis.multi();
+Transaction t = jedis.multi();
 t.set("foo", "bar");
 t.exec();
 ```
