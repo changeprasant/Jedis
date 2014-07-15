@@ -35,7 +35,7 @@ Note 2: Redis does not allow to use intermediate results of a transaction within
 // this does not work! Intra-transaction dependencies are not supported by Redis!
 jedis.watch(...);
 Transaction t = jedis.multi();
-if(t.get("key1").equals("something");
+if(t.get("key1").equals("something"))
    t.set("key2", "value2");
 else 
    t.set("key", "value");
