@@ -78,7 +78,9 @@ jedis.slaveOf("localhost", 6379);  //  if the master is on the same PC which run
 jedis.slaveOf("192.168.1.35", 6379); 
 ```
 
-Note: since slaves are also normal redis servers, they accept write requests without error, but the changes won't be replicated, and hence those changes are at risk to be silently overwritten, if you mix up your jedis instances.
+Note: since Redis 2.6 slaves are read only by default, so write requests to them will result in an error.
+
+If you change that setting they will behave like normal redis servers and accept write requests without errors, but the changes won't be replicated, and hence those changes are at risk to be silently overwritten, if you mix up your jedis instances.
 
 ####disable replication / upon failing master, promote a slave
 
