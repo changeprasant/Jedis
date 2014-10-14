@@ -21,7 +21,7 @@ Jedis is also distributed as a Maven Dependency through Sonatype. To configure t
 <dependency>
     <groupId>redis.clients</groupId>
     <artifactId>jedis</artifactId>
-    <version>2.5.1</version>
+    <version>2.6.0</version>
     <type>jar</type>
     <scope>compile</scope>
 </dependency>
