@@ -1,6 +1,6 @@
 # Welcome to the jedis wiki!
 
-## [[ReleaseNotes]].
+## [Release Notes](https://github.com/xetorthio/jedis/releases)
 
 ##[[Getting-started]]
 
