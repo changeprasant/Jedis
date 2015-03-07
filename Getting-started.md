@@ -58,6 +58,30 @@ try (Jedis jedis = pool.getResource()) {
 pool.destroy();
 ```
 
+If you can't use try-with-resource, you can still enjoy with Jedis.close().
+
+```java
+/// Jedis implements Closable. Hence, the jedis instance will be auto-closed after the last statement.
+Jedis jedis = null;
+try {
+  jedis = pool.getResource();
+  /// ... do stuff here ... for example
+  jedis.set("foo", "bar");
+  String foobar = jedis.get("foo");
+  jedis.zadd("sose", 0, "car"); jedis.zadd("sose", 0, "bike"); 
+  Set<String> sose = jedis.zrange("sose", 0, -1);
+} finally {
+  if (jedis != null) {
+    jedis.close();
+  }
+}
+/// ... when closing your application:
+pool.destroy();
+```
+
+If Jedis was borrowed from pool, it will be returned to pool with proper method since it already determines there was JedisConnectionException occurred.
+If Jedis wasn't borrowed from pool, it will be disconnected and closed.
+
 ###Setting up master/slave distribution 
 ####enable replication
 Redis is primarily built for master/slave distribution. This means that write requests have to be explicitly addressed to the master (a redis server), which replicates changes to slaves (which are also redis servers). Read requests then can be (but must not necessarily) addressed to the slaves, which alleviates the master.
