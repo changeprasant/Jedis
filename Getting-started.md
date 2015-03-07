@@ -61,7 +61,6 @@ pool.destroy();
 If you can't use try-with-resource, you can still enjoy with Jedis.close().
 
 ```java
-/// Jedis implements Closable. Hence, the jedis instance will be auto-closed after the last statement.
 Jedis jedis = null;
 try {
   jedis = pool.getResource();
