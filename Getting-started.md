@@ -21,7 +21,7 @@ Jedis is also distributed as a Maven Dependency through Sonatype. To configure t
 <dependency>
     <groupId>redis.clients</groupId>
     <artifactId>jedis</artifactId>
-    <version>2.6.0</version>
+    <version>2.7.2</version>
     <type>jar</type>
     <scope>compile</scope>
 </dependency>
@@ -41,7 +41,7 @@ JedisPool pool = new JedisPool(new JedisPoolConfig(), "localhost");
 
 You can store the pool somewhere statically, it is thread-safe. 
 
-JedisPoolConfig includes a number of helpful Redis-specific connection pooling defaults. For example, Jedis with JedisPoolConfig will close a connection after 300 seconds if it has not been returned.
+JedisPoolConfig includes a number of helpful Redis-specific connection pooling defaults. JedisPool is based on Commons Pool 2, so you may want to have a look at Commons Pool's configuration. Please see http://commons.apache.org/proper/commons-pool/apidocs/org/apache/commons/pool2/impl/GenericObjectPoolConfig.html for more details.
 
 You use it by:
 
