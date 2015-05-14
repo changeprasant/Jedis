@@ -18,3 +18,6 @@ JedisPoolConfig poolConfig = new JedisPoolConfig();
 poolConfig.setMaxTotal(maxTotal); // maximum active connections
 poolConfig.setMaxIdle(maxIdle);  // maximum idle connections
 ```
+
+Take into account that `JedisPool` inherits commons-pool [BaseObjectPoolConfig](https://commons.apache.org/proper/commons-pool/api-2.3/org/apache/commons/pool2/impl/BaseObjectPoolConfig.html) which has a lot of configuration parameters. 
+We've set some defined ones which suit most of the cases but you experience [issues](https://github.com/xetorthio/jedis/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+JedisPool)sometimes tuning those parameters helps.
