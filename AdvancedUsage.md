@@ -123,7 +123,7 @@ Then, there are two ways of using ShardedJedis. Direct connections or by using S
 ```java
 ShardedJedis jedis = new ShardedJedis(shards);
 jedis.set("a", "foo");
-jedis.disconnect;
+jedis.disconnect();
 ```
 
 #### 2.b) Pooled connection:
