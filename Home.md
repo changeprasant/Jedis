@@ -1,4 +1,4 @@
-# Welcome to the jedis wiki!1
+# Welcome to the jedis wiki!
 
 ## [Release Notes](https://github.com/xetorthio/jedis/releases)
 
