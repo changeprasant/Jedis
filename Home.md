@@ -29,5 +29,5 @@
 * [Redis: under the hood](http://pauladamsmith.com/articles/redis-under-the-hood.html)
 * [Salvatore's Blog](http://antirez.com/)
 * [Redis in Action](http://www.manning.com/carlson/)
-* [Redis: The Definitive Guide (upcoming September 2015)](http://shop.oreilly.com/product/0636920014294.do)
+* [Redis: The Definitive Guide](http://shop.oreilly.com/product/0636920014294.do)
 * Reading [[FAQ]] might be useful.
