@@ -1,16 +1,16 @@
 # Getting started
 
-# Installing Jedis
+## Installing Jedis
 In order to have Jedis as a dependency in your application you can:
-## Use the jar files
+### Use the jar files
 download the [latest jedis jar at search.maven.org](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22redis.clients%22%20AND%20a%3A%22jedis%22) and the [Apache Commons Pool 2  2.0 dependency](http://search.maven.org/#artifactdetails%7Corg.apache.commons%7Ccommons-pool2%7C2.0%7Cjar).
 
-## build from source 
+### build from source 
 This gives you the most recent version. 
 ### Clone the github project. 
 That is very easy, on the commandline you just need to:
 ```git clone git://github.com/xetorthio/jedis.git```
-### build
+#### build
 Before you package it using maven, you have to pass the tests.
 To run the tests and package, run ```make package```.
  
