@@ -106,5 +106,5 @@ In case your master goes down, you may want to promote a slave to be the new mas
 
 ```java
 slave1jedis.slaveofNoOne();
-slave2jedis.slaveOf("192.168.1.36", 6379); 
+slave2jedis.slaveof("192.168.1.36", 6379); 
 ```
