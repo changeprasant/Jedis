@@ -135,8 +135,8 @@ jedis.set("a", "foo");
 pool.returnResource(jedis);
 .... // a few moments later
 ShardedJedis jedis2 = pool.getResource();
-jedis.set("z", "bar");
-pool.returnResource(jedis);
+jedis2.set("z", "bar");
+pool.returnResource(jedis2);
 pool.destroy();
 ```
 
