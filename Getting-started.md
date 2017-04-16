@@ -46,7 +46,7 @@ JedisPoolConfig includes a number of helpful Redis-specific connection pooling d
 You use it by:
 
 ```java
-/// Jedis implements Closable. Hence, the jedis instance will be auto-closed after the last statement.
+/// Jedis implements Closeable. Hence, the jedis instance will be auto-closed after the last statement.
 try (Jedis jedis = pool.getResource()) {
   /// ... do stuff here ... for example
   jedis.set("foo", "bar");
