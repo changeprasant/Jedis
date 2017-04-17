@@ -2,7 +2,7 @@
 
 ## [Release Notes](https://github.com/xetorthio/jedis/releases)
 
-##[[Getting-started]]
+## [[Getting-started]]
 
 * Setting up
     - where to get the jar of jedis,
@@ -16,7 +16,7 @@
         - disable replication / fail-over / promote a slave
  
 
-##[[AdvancedUsage]]
+## [[AdvancedUsage]]
 
 * Transactions
 * Pipelining
