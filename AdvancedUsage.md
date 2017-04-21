@@ -1,6 +1,7 @@
 # Advanced usage
 
 ##Transactions
+
 To do transactions in Jedis, you have to wrap operations in a transaction block, very similar to pipelining:
 
 ```java
@@ -97,16 +98,20 @@ jedis.subscribe(l, "foo");
 Note that subscribe is a blocking operation because it will poll Redis for responses on the thread that calls subscribe.  A single JedisPubSub instance can be used to subscribe to multiple channels.  You can call subscribe or psubscribe on an existing JedisPubSub instance to change your subscriptions.
 
 ## ShardedJedis
+
 ###Motivation
+
 In the normal Redis master-slave approach, generally there is one master that serves write requests, and many slaves that serve read requests. This means, the user has to take care of effectively distributing the load on the slaves. Furthermore, only reads scale with the number of slaves, but writes do not, since there can be only one master! With ShardedJedis you achieve scalability for both reads and writes.  Sharding uses a technique called "consistent hashing" and assigns the keys equally on a set of redis servers according to some hash algorithm (md5 and murmur, the latter being less standard, but faster). A node like this is then called a "shard". A further advantage is that each shards only needs to have RAM 1/n the size of the total dataset (for n being the number of participating slaves).
 
-###The downside 
+###The downside
+
 Since each shard is a separate master, sharding has limited functionality: i.e. you cannot use transactions, pipelining, pub/sub, especially not across shards! However, generally it is feasible to do a not allowed operation, as long as the concerned keys are on the same shard (check / ask the forum). You can influence which key go to which shard by keytags (see below). A further downside is that in the current standard implementation, shards cannot be added or removed from a running ShardedJedis. 
 If you need this feature, there is an experimental reimplementation of ShardedJedis which allows adding and removing shards of a running ShardedJedis: [yaourt - dynamic sharding implementation](https://github.com/xetorthio/jedis/pull/174)
 
 ###General Usage:
 
 #### 1. Define your shards:
+
 ```java
 List<JedisShardInfo> shards = new ArrayList<JedisShardInfo>();
 JedisShardInfo si = new JedisShardInfo("localhost", 6379);
@@ -120,6 +125,7 @@ shards.add(si);
 Then, there are two ways of using ShardedJedis. Direct connections or by using ShardedJedisPool. For reliable operation, the latter has to be used in a multithreaded environment.
 
 #### 2.a) Direct connection:
+
 ```java
 ShardedJedis jedis = new ShardedJedis(shards);
 jedis.set("a", "foo");
@@ -127,6 +133,7 @@ jedis.disconnect();
 ```
 
 #### 2.b) Pooled connection:
+
 ```java
 ShardedJedisPool pool = new ShardedJedisPool(new Config(), shards);
 ShardedJedis jedis = pool.getResource();
@@ -141,6 +148,7 @@ pool.destroy();
 ```
 
 #### 3. Disconnect / returnRessource
+
 pool.returnResource should be called as soon as you are finished using jedis in a particular moment. If you don't, the pool may get slower after a while. getResource and returnResource are fast, since no new connection have to be created. Creation and destruction of a pool are slower, since theses are the actual network connections. Forgetting pool.destroy keeps the connection open until timeout is reached.
 
 
@@ -152,6 +160,7 @@ si.getHost/getPort/getPassword/getTimeout/getName
 ```
 
 #### Force certain keys to go to the same shard
+
 What you need is something called "keytags", and they are supported by Jedis. To work with keytags you just need to set a pattern when you instance ShardedJedis.
 For example:
 ```java
@@ -172,13 +181,16 @@ will go to the same shard.
 
 
 ### Mixed approach
+
 If you want easy load distribution of ShardedJedis, but still need transactions/pipelining/pubsub etc, you can also mix the normal and the sharded approach: define a master as normal Jedis, the others as sharded Jedis. Then make all the shards slaveof master. In your application, direct your write requests to the master, the read requests to ShardedJedis. Your writes don't scale anymore, but you gain good read distribution, and you have transactions/pipelining/pubsub simply using the master. Dataset should fit in RAM of master. Remember that you can improve performance of the master a lot, if you let the slaves do the persistance for the master!
 
 #### Redis Cluster
+
 Sometime later 2011, there will be first versions of "redis cluster" which will be a much improved Sharded Jedis and should give back some if not all of the Redis functionalities you cannot have with shardedJedis. If you want to know more about redis cluster, youtube has a presentation of Salvatore Sanfilippo (the creator of Redis).
 
 
 ### Monitoring
+
 To use the monitor command you can do something like the following:
 
 ```java
@@ -206,8 +218,10 @@ jedis.monitor(new JedisMonitor() {
 ##  Misc 
 
 ### A note about String and Binary - what is native?
+
 Redis/Jedis talks a lot about Strings. And here [[http://redis.io/topics/internals]] it says Strings are the basic building block of Redis. However, this stress on strings may be misleading. Redis' "String" refer to the C char type (8 bit), which is incompatible with Java Strings (16-bit). Redis sees only 8-bit blocks of data of predefined length, so normally it doesn't interpret the data (it's "binary safe"). Therefore in Java, byte[] data is "native", whereas Strings have to be encoded before being sent, and decoded after being retrieved by the SafeEncoder. This has some minor performance impact.
 In short: if you have binary data, don't encode it into String, but use the binary versions.
 
 ### A note on Redis' master/slave distribution
+
 A Redis network consists of redis servers, which can be either masters or slaves. Slaves are synchronized to the master (master/slave replication). However, master and slaves look identical to a client, and slaves do accept write requests, but they will not be propagated "up-hill" and could eventually be overwritten by the master. It makes sense to route reads to slaves, and write demands to the master. Furthermore, being a slave doesn't prevent from being considered master by another slave.
