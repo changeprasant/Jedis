@@ -108,7 +108,7 @@ In the normal Redis master-slave approach, generally there is one master that se
 Since each shard is a separate master, sharding has limited functionality: i.e. you cannot use transactions, pipelining, pub/sub, especially not across shards! However, generally it is feasible to do a not allowed operation, as long as the concerned keys are on the same shard (check / ask the forum). You can influence which key go to which shard by keytags (see below). A further downside is that in the current standard implementation, shards cannot be added or removed from a running ShardedJedis. 
 If you need this feature, there is an experimental reimplementation of ShardedJedis which allows adding and removing shards of a running ShardedJedis: [yaourt - dynamic sharding implementation](https://github.com/xetorthio/jedis/pull/174)
 
-###General Usage:
+### General Usage:
 
 #### 1. Define your shards:
 
