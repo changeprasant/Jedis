@@ -1,6 +1,6 @@
 # Advanced usage
 
-##Transactions
+## Transactions
 
 To do transactions in Jedis, you have to wrap operations in a transaction block, very similar to pipelining:
 
@@ -99,11 +99,11 @@ Note that subscribe is a blocking operation because it will poll Redis for respo
 
 ## ShardedJedis
 
-###Motivation
+### Motivation
 
 In the normal Redis master-slave approach, generally there is one master that serves write requests, and many slaves that serve read requests. This means, the user has to take care of effectively distributing the load on the slaves. Furthermore, only reads scale with the number of slaves, but writes do not, since there can be only one master! With ShardedJedis you achieve scalability for both reads and writes.  Sharding uses a technique called "consistent hashing" and assigns the keys equally on a set of redis servers according to some hash algorithm (md5 and murmur, the latter being less standard, but faster). A node like this is then called a "shard". A further advantage is that each shards only needs to have RAM 1/n the size of the total dataset (for n being the number of participating slaves).
 
-###The downside
+### The downside
 
 Since each shard is a separate master, sharding has limited functionality: i.e. you cannot use transactions, pipelining, pub/sub, especially not across shards! However, generally it is feasible to do a not allowed operation, as long as the concerned keys are on the same shard (check / ask the forum). You can influence which key go to which shard by keytags (see below). A further downside is that in the current standard implementation, shards cannot be added or removed from a running ShardedJedis. 
 If you need this feature, there is an experimental reimplementation of ShardedJedis which allows adding and removing shards of a running ShardedJedis: [yaourt - dynamic sharding implementation](https://github.com/xetorthio/jedis/pull/174)
