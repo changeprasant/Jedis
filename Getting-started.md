@@ -1,20 +1,20 @@
 # Getting started
 
-## Installing Jedis
+## Installing Jedis  
 In order to have Jedis as a dependency in your application you can:
 ### Use the jar files
 download the [latest jedis jar at search.maven.org](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22redis.clients%22%20AND%20a%3A%22jedis%22) and the [Apache Commons Pool 2  2.0 dependency](http://search.maven.org/#artifactdetails%7Corg.apache.commons%7Ccommons-pool2%7C2.0%7Cjar).
 
-### Build from source 
+### Build from source  
 This gives you the most recent version. 
 #### Clone the GitHub project. 
 That is very easy, on the commandline you just need to:
 ```git clone git://github.com/xetorthio/jedis.git```
-#### Build from GitHub
+#### Build from GitHub  
 Before you package it using maven, you have to pass the tests.
 To run the tests and package, run ```make package```.
  
-### Configure a Maven dependency
+### Configure a Maven dependency  
 Jedis is also distributed as a Maven Dependency through Sonatype. To configure that just add the following XML snippet to your pom.xml file.
 
 ```xml
@@ -26,8 +26,8 @@ Jedis is also distributed as a Maven Dependency through Sonatype. To configure t
     <scope>compile</scope>
 </dependency>
 ```
-## Basic usage example 
-###using Jedis in a multithreaded environment
+## Basic usage example  
+### using Jedis in a multithreaded environment  
 You shouldn't use the same instance from different threads because you'll have strange errors. 
 And sometimes creating lots of Jedis instances is not good enough because it means lots of sockets and connections, which leads to strange errors as well. 
 ```A single Jedis instance is not threadsafe!```
@@ -81,8 +81,8 @@ pool.destroy();
 If Jedis was borrowed from pool, it will be returned to pool with proper method since it already determines there was JedisConnectionException occurred.
 If Jedis wasn't borrowed from pool, it will be disconnected and closed.
 
-###Setting up master/slave distribution 
-####enable replication
+### Setting up master/slave distribution  
+#### enable replication  
 Redis is primarily built for master/slave distribution. This means that write requests have to be explicitly addressed to the master (a redis server), which replicates changes to slaves (which are also redis servers). Read requests then can be (but must not necessarily) addressed to the slaves, which alleviates the master.
 
 You use the master as shown above. In order to enable replication, there are two ways to tell a slave it will be "slaveOf" a given master: 
@@ -100,7 +100,7 @@ Note: since Redis 2.6 slaves are read only by default, so write requests to them
 
 If you change that setting they will behave like normal redis servers and accept write requests without errors, but the changes won't be replicated, and hence those changes are at risk to be silently overwritten, if you mix up your jedis instances.
 
-####disable replication / upon failing master, promote a slave
+#### disable replication / upon failing master, promote a slave  
 
 In case your master goes down, you may want to promote a slave to be the new master. You should first (try to) disable replication of the offline master first, then, in case you have several slaves, enable replication of the remaining slaves to the new master:
 
