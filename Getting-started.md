@@ -70,7 +70,9 @@ try {
   jedis.zadd("sose", 0, "car"); jedis.zadd("sose", 0, "bike"); 
   Set<String> sose = jedis.zrange("sose", 0, -1);
 } finally {
-  // You have to close jedis object. If you don't close then it doesn't release back to pool and you can't get a new resource from pool.
+  // You have to close jedis object. If you don't close then
+  // it doesn't release back to pool and you can't get a new
+  // resource from pool.
   if (jedis != null) {
     jedis.close();
   }
