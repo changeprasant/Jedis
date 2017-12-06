@@ -145,12 +145,12 @@ try (ShardedJedis jedis2 = pool.getResource()) {
     jedis2.set("z", "bar");
 }
 
-pool.destroy();
+pool.close();
 ```
 
 #### 3. Disconnect / returnRessource
 
-pool.returnResource should be called as soon as you are finished using jedis in a particular moment. If you don't, the pool may get slower after a while. getResource and returnResource are fast, since no new connection have to be created. Creation and destruction of a pool are slower, since theses are the actual network connections. Forgetting pool.destroy keeps the connection open until timeout is reached.
+pool.returnResource should be called as soon as you are finished using jedis in a particular moment. If you don't, the pool may get slower after a while. getResource and returnResource are fast, since no new connection have to be created. Creation and destruction of a pool are slower, since theses are the actual network connections. Forgetting pool.close keeps the connection open until timeout is reached.
 
 
 #### Determine information of the shard of a particular key
