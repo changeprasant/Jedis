@@ -134,18 +134,18 @@ jedis.disconnect();
 #### 2.b) Pooled connection:
 
 ```java
-        JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
-        ShardedJedisPool pool = new ShardedJedisPool(jedisPoolConfig, shards);
+JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+ShardedJedisPool pool = new ShardedJedisPool(jedisPoolConfig, shards);
 
-        try (ShardedJedis jedis = pool.getResource()) {
-            jedis.set("a", "foo");
-        }
+try (ShardedJedis jedis = pool.getResource()) {
+    jedis.set("a", "foo");
+}
 
-        try (ShardedJedis jedis2 = pool.getResource()) {
-            jedis2.set("z", "bar");
-        }
+try (ShardedJedis jedis2 = pool.getResource()) {
+    jedis2.set("z", "bar");
+}
 
-        pool.destroy();
+pool.destroy();
 ```
 
 #### 3. Disconnect / returnRessource
