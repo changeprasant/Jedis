@@ -55,7 +55,7 @@ try (Jedis jedis = pool.getResource()) {
   Set<String> sose = jedis.zrange("sose", 0, -1);
 }
 /// ... when closing your application:
-pool.destroy();
+pool.close();
 ```
 
 If you can't use try-with-resource, you can still enjoy with Jedis.close().
@@ -78,7 +78,7 @@ try {
   }
 }
 /// ... when closing your application:
-pool.destroy();
+pool.close();
 ```
 
 If Jedis was borrowed from pool, it will be returned to pool with proper method since it already determines there was JedisConnectionException occurred.
