@@ -216,7 +216,7 @@ jedis.monitor(new JedisMonitor() {
 });
 ```
 
-##  Misc 
+## Miscellaneous 
 
 ### A note about String and Binary - what is native?
 
