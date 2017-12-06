@@ -3,7 +3,7 @@
 ## Installing Jedis  
 In order to have Jedis as a dependency in your application you can:
 ### Use the jar files
-Download the latest [Jedis](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22redis.clients%22%20AND%20a%3A%22jedis%22) and [Apache Commons Pool2](http://search.maven.org/#artifactdetails%7Corg.apache.commons%7Ccommons-pool2%7C2.0%7Cjar) jars from [[search.maven.org]] or any other maven repository.
+Download the latest [Jedis](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22redis.clients%22%20AND%20a%3A%22jedis%22) and [Apache Commons Pool2](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.apache.commons%22%20AND%20a%3A%22commons-pool2%22) jars from [[search.maven.org]] or any other maven repository.
 
 ### Build from source  
 This gives you the most recent version. 
