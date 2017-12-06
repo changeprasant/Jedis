@@ -86,8 +86,7 @@ class MyListener extends JedisPubSub {
         public void onPUnsubscribe(String pattern, int subscribedChannels) {
         }
 
-        public void onPMessage(String pattern, String channel,
-            String message) {
+        public void onPMessage(String pattern, String channel, String message) {
         }
 }
 
