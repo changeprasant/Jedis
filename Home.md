@@ -26,6 +26,8 @@
 
 ## [[FAQ]]
 
+Reading FAQ might be useful.
+
 ## Links
 
 * [Redis: under the hood](http://pauladamsmith.com/articles/redis-under-the-hood.html)
