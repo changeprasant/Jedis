@@ -6,6 +6,7 @@ Try setting own `timeout` value when constructing `JedisPool` using the followin
 ```java
 JedisPool(GenericObjectPoolConfig poolConfig, String host, int port, int timeout)
 ```
+where `timeout` is given as milliseconds.
 
 Default `timeout` value is **2 seconds**.
 
