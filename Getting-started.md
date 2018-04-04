@@ -95,8 +95,8 @@ You use the master as shown above. In order to enable replication, there are two
 * on a given jedis instance (see above), call the slaveOf method and pass IP (or "localhost") and port as argument:
 
 ```java
-jedis.slaveOf("localhost", 6379);  //  if the master is on the same PC which runs your code
-jedis.slaveOf("192.168.1.35", 6379); 
+jedis.slaveof("localhost", 6379);  //  if the master is on the same PC which runs your code
+jedis.slaveof("192.168.1.35", 6379); 
 ```
 
 Note: since Redis 2.6 slaves are read only by default, so write requests to them will result in an error.
